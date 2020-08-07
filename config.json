@@ -1,0 +1,10 @@
+{
+    "metric": 1,
+    "n_comp": 2,
+    "name": "test",
+    "rdm": "C:\\Users\\andre\\_NeuroImaging\\scripts\\maastricht\\pyRSA-BV\\Skyra_Salerno_version\\audio_version_classes\\rt_rsa_example\\merged_tmaps\\class_test.rdm",
+    "base_stimuli": "C:\\Users\\andre\\_NeuroImaging\\scripts\\maastricht\\pyRSA-BV\\Skyra_Salerno_version\\audio_version_classes\\rt_rsa_example\\merged_tmaps\\class_test.tvals",
+    "rs_coords": "C:\\Users\\andre\\_NeuroImaging\\scripts\\maastricht\\pyRSA-BV\\Skyra_Salerno_version\\audio_version_classes\\rt_rsa_example\\merged_tmaps\\class_test.rsc",
+    "inv_mat": "C:\\Users\\andre\\_NeuroImaging\\scripts\\maastricht\\pyRSA-BV\\Skyra_Salerno_version\\audio_version_classes\\rt_rsa_example\\merged_tmaps\\class_test.mat",
+    "func_coords": "C:\\Users\\andre\\_NeuroImaging\\scripts\\maastricht\\pyRSA-BV\\Skyra_Salerno_version\\audio_version_classes\\rt_rsa_example\\merged_tmaps\\class_test.fnc"
+}
