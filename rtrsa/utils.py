@@ -200,7 +200,8 @@ def merge_tmaps(name,dist_metric,n_comp,inputdir,outdir,basename):
     rdm = rtRSAObj.createRS(tvals_mat)
     
     #write on disk all the results
-    rtRSAObj.saveAs(outdir,basename)
+    class_outdir = os.mkdir(os.path.join(outdir,basename))
+    rtRSAObj.saveAs(class_outdir,basename)
     
    
     

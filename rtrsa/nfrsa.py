@@ -238,7 +238,7 @@ class rtRSA:
         data['inv_mat'] = os.path.join(directory,basename+'.mat')
         data['func_coords'] = os.path.join(directory,basename+'.fnc')
         
-        with open(os.path.join(os.getcwd(),'config.json'), 'w') as outfile:
+        with open(os.path.join(os.getcwd(),basename+'.json'), 'w') as outfile:
             json.dump(data, outfile,indent=4)
         
 
@@ -261,6 +261,8 @@ class rtRSA:
         """
         
         config = json.load(open(config_file))
+        
+       # input_name = input('Name of the input directory:\n')
         
         self.n_comp = config['n_comp']
         

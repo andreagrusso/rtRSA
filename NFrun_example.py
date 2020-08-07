@@ -28,10 +28,40 @@ of the rtRSA.
 from psychopy import core, visual, event
 import os
 import numpy as np
+from expyriment_stash.extras.expyriment_io_extras import tbvnetworkinterface
 import matplotlib
 matplotlib.use('Agg') #to avoid display of the plot
 from matplotlib import pyplot as plt
 import matplotlib.lines as mlines
 from psychopy.sound import Sound
 import json
-from ..rtrsa import nfrsa, utils
+from rtrsa import nfrsa, utils
+
+
+#%%
+
+#get current directory
+wdir = os.getcwd()
+
+
+
+#%%###########################################################################
+#                           Create an rtRSA object                           #
+##############################################################################
+
+rtRSAObj = nfrsa.rtRSA('test',2,'pearson')
+
+#load properties in the just created rtRSAObj
+#the config.json file can be created by using one of the class method
+#the file si wirtten after the estimation of the RS
+rtRSAObj.load(os.path.join(wdir,'config.json'))
+
+
+#%%############################################################################
+#                               TBV  interface settings                       #
+###############################################################################
+
+#create an instance to access TBV via network plugin
+TBV = tbvnetworkinterface.TbvNetworkInterface('localhost',55555)
+
+    
