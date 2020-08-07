@@ -34,6 +34,4 @@ from matplotlib import pyplot as plt
 import matplotlib.lines as mlines
 from psychopy.sound import Sound
 import json
-import sys
-sys.path.insert(1, 'C:/Users/andre/_NeuroImaging/scripts/maastricht/rtRSA/rtrsa')
-from rtrsa import nfrsa, utils
+from ..rtrsa import nfrsa, utils
