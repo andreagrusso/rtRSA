@@ -27,6 +27,7 @@ of the rtRSA.
 """
 from psychopy import core, visual, event
 import os
+import pickle
 import numpy as np
 from expyriment_stash.extras.expyriment_io_extras import tbvnetworkinterface
 import matplotlib
@@ -34,8 +35,7 @@ matplotlib.use('Agg') #to avoid display of the plot
 from matplotlib import pyplot as plt
 import matplotlib.lines as mlines
 from psychopy.sound import Sound
-import json
-from rtrsa import nfrsa, utils
+from rtrsa import nfrsa
 
 
 #%%
@@ -121,7 +121,7 @@ fixation = visual.TextStim(win,
 #clock initialization
 globalClock = core.Clock()
 
-###############################################################################
+#%%############################################################################
 #                      THESE VARIABLES DEPEND ON                             #
 #                      THE EXPERIMENTAL DESIGN                               #
 ###############################################################################
@@ -141,10 +141,6 @@ tasks = pickle.load(open(os.path.join(wdir,'prt/tasks.pkl'),'rb'))
 feedbacks = pickle.load(open(os.path.join(wdir,'prt/feedbacks.pkl'),'rb'))
 fb_duration = feedbacks[0,1]-feedbacks[0,0] +1
 
-
-#little trick to have the first feedback. TBV4 returns empty tvalues if all
-#predictors have not yet appeared
-feedbacks[0,0] = feedbacks[0,0]+1
 nr_of_trials = feedbacks.shape[0]
 
 #variable to store positions of the stimulus in time
@@ -154,7 +150,7 @@ stimulus_positions = np.empty((nr_of_trials+1,2))
 idx_ctr = 0
 
 
-###############################################################################
+#%%############################################################################
 #                     Create a plot of the base stimuli                       #
 ###############################################################################
 
@@ -171,7 +167,7 @@ ax.set_facecolor('dimgray')
 plt.xticks([])
 plt.yticks([])
 plt.axis('off')
-for label, x, y in zip(conditions, rtRSAObj.RS_coords[:,0],rtRSAObj.RS_coords[:,1]):
+for label, x, y in zip(rtRSAObj.conditions, rtRSAObj.RS_coords[:,0],rtRSAObj.RS_coords[:,1]):
     plt.annotate(label, xy=(x, y), xytext=(20, -20),size=15,
                  textcoords='offset points', ha='right', va='bottom',
                  bbox=dict(boxstyle='round,pad=0.5', fc='yellow', alpha=1),
@@ -191,7 +187,7 @@ plt.legend(handles=[yellow_circle, red_star],
 
 
 
-###############################################################################
+#%%############################################################################
 #                             Reading data from TBV                           #
 ###############################################################################
 timepoint_timing = []
@@ -213,9 +209,6 @@ globalClock.reset()
 print("First trigger!")
 
 
-
-  
-
 #it waits until the first time point is processed by TBV to be sure to 
 #read correct data from TBV settings file
 CurrTimePoint = 0
@@ -224,6 +217,7 @@ while TBV.get_current_time_point()[0] < 1:
     NrOfROIs = TBV.get_nr_of_rois()[0]
     print('Waiting TBV....')
 
+raw_nf_coords = []
 
 print("OK let's go! Expected TPs: " + str(NrOfTimePoints))    
 #general loop
@@ -240,18 +234,22 @@ while TBV.get_current_time_point()[0] <= NrOfTimePoints:
         if NrOfROIs == 0:                
             print('Please add a ROI')
             NrOfROIs = TBV.get_nr_of_rois()[0]
-        
+            
+            
         else:
+            
+            if not raw_nf_coords:
+                raw_nf_coords = TBV.get_all_coords_of_voxels_of_roi(0)[0]
+                    
+                nf_coords = rtRSAObj.match_coords(raw_nf_coords)
             #needed to avoid accessing to timepoint -1 (fake) or timepoint 0
             if CurrTimePoint > 1 :
                 #THE ACTUAL EXPERIMENT STARTS ONLY IF THERE IS A ROI!!!!!!#
 
-                #displaying the results of only one ROI (the first in this case)
-                selected_VOI =  int(config['voi_index'])
-    
-                #coordinates of voxels of the roi
-                coord_roi_voxels = TBV.get_all_coords_of_voxels_of_roi(selected_VOI)[0]
-            
+                #coordinates of voxels of the VOI (index = 0)
+                # raw_nf_coords = TBV.get_all_coords_of_voxels_of_roi(0)[0]
+                
+                # nf_coords = rtRSAObj.match_coords(raw_nf_coords)
                 
                 #setting the fixation for the baseline
                 if CurrTimePoint in baselines[1:,0]:
@@ -275,7 +273,7 @@ while TBV.get_current_time_point()[0] <= NrOfTimePoints:
                     #extractiing tvalues from the ROI
                     #in this experimental paradigm we have only one contrast
                     tvalues = [TBV.get_map_value_of_voxel(0,coords)[0] 
-                                    for coords in coord_roi_voxels]
+                                    for coords in nf_coords]
 
                     #estimate nwe stimulus coordinates
                     stimulus_positions[idx_ctr,:] = rtRSAObj.target_positioning(tvalues)
@@ -323,7 +321,7 @@ while TBV.get_current_time_point()[0] <= NrOfTimePoints:
                     #contrast number is fixed for the simulation
                     #extract tvalues at the corresponding coordinates
                     tvalues = [TBV.get_map_value_of_voxel(0,coords)[0] 
-                               for coords in coord_roi_voxels]
+                               for coords in nf_coords]
                     
                     #estimate new stimulus coordinates
                     stimulus_positions[idx_ctr,:] = rtRSAObj.target_positioning(tvalues)
