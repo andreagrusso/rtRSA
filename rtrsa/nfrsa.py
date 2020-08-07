@@ -74,6 +74,8 @@ class rtRSA:
         #coordinates of the ROI in the functional native space (FMR) from 
         #which the t-values of the base stimuli are extracted
         self.func_coords = []
+        #name of the base stimuli
+        self.conditions = []
         
         
 
@@ -187,7 +189,25 @@ class rtRSA:
         """
         self.func_coords = coords 
         
+     
         
+    def load_conditions(self,conditions):
+        """
+        
+
+        Parameters
+        ----------
+        conditions : lsit
+            List of the name of the base stimuli.
+
+        Returns
+        -------
+        None.
+
+        """
+        self.conditions = conditions
+        
+     
 
     def saveAs(self,directory, basename):
         
@@ -223,7 +243,10 @@ class rtRSA:
         
         #save functional coords
         np.savetxt(os.path.join(directory,basename+'.fnc'),self.func_coords)        
-
+        
+        #save name of the base stimuli
+        f=open(os.path.join(directory,basename+'.cnd'))
+        [f.write('%s\n' % item) for item in self.conditions]
         #create json file where the locations of all the rtRSA object properties
         #are stored
         data = {}
@@ -237,6 +260,7 @@ class rtRSA:
         data['rs_coords'] = os.path.join(directory,basename+'.rsc')
         data['inv_mat'] = os.path.join(directory,basename+'.mat')
         data['func_coords'] = os.path.join(directory,basename+'.fnc')
+        data['conditions'] = os.path.join(directory,basename+'.cnd')
         
         with open(os.path.join(os.getcwd(),basename+'.json'), 'w') as outfile:
             json.dump(data, outfile,indent=4)
@@ -285,6 +309,10 @@ class rtRSA:
         #coordinates of the ROI in the functional native space (FMR) from 
         #which the t-values of the base stimuli are extracted
         self.func_coords = np.loadtxt(config['func_coords'])
+        
+        #import name of the base stimuli
+        f = open(config['conditions'],'r')
+        self.conditions = [line.rstrip() for line in f.readlines()]
                 
 
     def cmdscale(self):

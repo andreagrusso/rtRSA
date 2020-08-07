@@ -167,7 +167,9 @@ def merge_tmaps(name,dist_metric,n_comp,inputdir,outdir,basename):
     for filename in tmaps:
         conditions.append(os.path.basename(filename).split('_')[0])
         raw_tvals.append(np.loadtxt(open(filename,'r')))
-        
+    
+    #load condition names    
+    rtRSAObj.load_conditions(conditions)
     
     #intersect coordinates of the maps
     #we know how many base stimuli we have bu we cannot code directly
