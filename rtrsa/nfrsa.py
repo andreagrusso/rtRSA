@@ -245,7 +245,7 @@ class rtRSA:
         np.savetxt(os.path.join(directory,basename+'.fnc'),self.func_coords)        
         
         #save name of the base stimuli
-        f=open(os.path.join(directory,basename+'.cnd'))
+        f=open(os.path.join(directory,basename+'.cnd'),'w')
         [f.write('%s\n' % item) for item in self.conditions]
         #create json file where the locations of all the rtRSA object properties
         #are stored
