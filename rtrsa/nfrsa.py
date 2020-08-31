@@ -262,7 +262,7 @@ class rtRSA:
         data['func_coords'] = os.path.join(directory,basename+'.fnc')
         data['conditions'] = os.path.join(directory,basename+'.cnd')
         
-        with open(os.path.join(os.getcwd(),basename+'.json'), 'w') as outfile:
+        with open(os.path.join(directory,basename+'.json'), 'w') as outfile:
             json.dump(data, outfile,indent=4)
         
 
