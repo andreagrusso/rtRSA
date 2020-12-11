@@ -551,7 +551,7 @@ class rtRSA:
         else:
             #the lucky situation when the number of coordinates are the same
             print('Same number of voxels! Lucky you!')
-    
+            nf_coords = curr_coords
         
         
         
