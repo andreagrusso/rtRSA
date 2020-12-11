@@ -1,0 +1,11 @@
+{
+    "metric": 1,
+    "n_comp": 2,
+    "name": "pearson_11Dec20",
+    "rdm": "C:/Users/andre/Documents/TBVData/rtRSA_5Dec2019/TBVFiles/test_11Dec2020\\pearson_test11Dec20\\pearson_test11Dec20.rdm",
+    "base_stimuli": "C:/Users/andre/Documents/TBVData/rtRSA_5Dec2019/TBVFiles/test_11Dec2020\\pearson_test11Dec20\\pearson_test11Dec20.tvals",
+    "rs_coords": "C:/Users/andre/Documents/TBVData/rtRSA_5Dec2019/TBVFiles/test_11Dec2020\\pearson_test11Dec20\\pearson_test11Dec20.rsc",
+    "inv_mat": "C:/Users/andre/Documents/TBVData/rtRSA_5Dec2019/TBVFiles/test_11Dec2020\\pearson_test11Dec20\\pearson_test11Dec20.mat",
+    "func_coords": "C:/Users/andre/Documents/TBVData/rtRSA_5Dec2019/TBVFiles/test_11Dec2020\\pearson_test11Dec20\\pearson_test11Dec20.fnc",
+    "conditions": "C:/Users/andre/Documents/TBVData/rtRSA_5Dec2019/TBVFiles/test_11Dec2020\\pearson_test11Dec20\\pearson_test11Dec20.cnd"
+}
