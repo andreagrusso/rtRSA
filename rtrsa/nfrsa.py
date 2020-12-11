@@ -409,7 +409,8 @@ class rtRSA:
     
         elif self.dist_metric == 2:
             # Use Eucledian distance
-            RDM = euclidean(data,data,'euclidean')
+            
+            RDM = euclidean_distances(data,data,'euclidean')
     
         elif self.dist_metric == 3:
             # Use absolute activation difference
