@@ -36,6 +36,55 @@ from matplotlib import pyplot as plt
 import matplotlib.lines as mlines
 from psychopy.sound import Sound
 from rtrsa import nfrsa
+import time 
+
+#%%############################################################################
+#                                 FUNCTIONS                                   #
+###############################################################################
+
+
+def create_visual_fb(idx_ctr,stimulus_positions,curr_block):
+
+    if idx_ctr == 0:
+        
+        print('Contrast:',idx_ctr+1)
+        plt.scatter(stimulus_positions[idx_ctr,0],
+                    stimulus_positions[idx_ctr,1], 
+                    marker = '*',s=200, color = 'red', 
+                    edgecolors='black')
+        if curr_block == 't':
+            plt.title('Imagine')
+        else:
+            plt.title('Rest')
+        ax.set_facecolor('dimgray')
+        plt.xticks([])
+        plt.yticks([])
+        plt.axis('off')
+        
+    else:
+        print('Contrast:',idx_ctr)
+        plt.scatter(stimulus_positions[:idx_ctr,0],stimulus_positions[:idx_ctr,1], 
+                    marker = '*',s=200, color = 'darkgray')
+        plt.scatter(stimulus_positions[idx_ctr,0],stimulus_positions[idx_ctr,1], 
+                    marker = '*',s=200, color = 'red', edgecolors='black')
+        #plotting the trajectory
+        plt.plot(stimulus_positions[:idx_ctr+1,0],stimulus_positions[:idx_ctr+1,1], '-',
+                    color = 'green')
+        if curr_block == 't':
+            plt.title('IMAGINE',size=30)
+        else:
+            plt.title('REST',size=30)
+
+        ax.set_facecolor('dimgray')
+        plt.xticks([])
+        plt.yticks([])
+        plt.axis('off')
+            
+    #save figure
+    plt.savefig(os.path.join(outdir,'tvals_Trial' + str(idx_ctr)+ '.png'),
+               facecolor='dimgray', edgecolor='none', dpi=200)
+    #show the figure()
+    image.setImage(os.path.join(outdir,'tvals_Trial' + str(idx_ctr)+ '.png'))
 
 
 #%%
@@ -59,6 +108,8 @@ print('rtRSA ready!\n')
 print('Nr of voxels: ',+ len(rtRSAObj.func_coords))
 print('Base stimuli name:')
 print(rtRSAObj.conditions)
+
+
 
 #%%############################################################################
 #                               TBV  interface settings                       #
@@ -91,6 +142,31 @@ image = visual.ImageStim(win,
                      autoLog=None, 
                      maskParams=None)
 
+fixation = visual.TextStim(win, 
+                           text='+', 
+                           font='Arial', 
+                           pos=(0.0, 0.0), 
+                           depth=0, 
+                           rgb=None, 
+                           color='white', 
+                           colorSpace='rgb', 
+                           opacity=1.0, 
+                           contrast=1.0, 
+                           units='', 
+                           ori=0.0, 
+                           height=0.15, 
+                           antialias=True, 
+                           bold=False, 
+                           italic=False, 
+                           alignHoriz='center', 
+                           alignVert='center', 
+                           fontFiles=(), 
+                           wrapWidth=None, 
+                           flipHoriz=False, 
+                           flipVert=False, 
+                           languageStyle='LTR', 
+                           name=None, 
+                           autoLog=None)
 
 #clock initialization
 globalClock = core.Clock()
@@ -112,11 +188,10 @@ stop_stim = Sound(stop_wav)
 outdir = os.path.join(wdir,'output')
 
 #condition timings
-baselines = np.arange(0,int(total_volumes),40)
-pickle.load(open(os.path.join(wdir,'prt/baselines.pkl'),'rb'))
-tasks = pickle.load(open(os.path.join(wdir,'prt/tasks.pkl'),'rb'))
-feedbacks = pickle.load(open(os.path.join(wdir,'prt/feedbacks.pkl'),'rb'))
-fb_duration = feedbacks[0,1]-feedbacks[0,0] +1
+baselines = pickle.load(open(os.path.join(wdir,'prt/new_paradigm/baselines.pkl'),'rb'))
+tasks = pickle.load(open(os.path.join(wdir,'prt/new_paradigm/tasks.pkl'),'rb'))
+feedbacks = pickle.load(open(os.path.join(wdir,'prt/new_paradigm/feedbacks_with_baseline.pkl'),'rb'))
+fb_duration = 5
 
 nr_of_trials = feedbacks.shape[0]
 
@@ -222,70 +297,37 @@ while TBV.get_current_time_point()[0] <= NrOfTimePoints:
             #needed to avoid accessing to timepoint -1 (fake) or timepoint 0
             if CurrTimePoint > 1 :
                 #THE ACTUAL EXPERIMENT STARTS ONLY IF THERE IS A ROI!!!!!!#
+                fixation.draw()
+                win.flip()
 
-                #coordinates of voxels of the VOI (index = 0)
-                # raw_nf_coords = TBV.get_all_coords_of_voxels_of_roi(0)[0]
-                
-                # nf_coords = rtRSAObj.match_coords(raw_nf_coords)
-                
-                #setting the fixation for the baseline
-                if CurrTimePoint in baselines[1:,0]:
-                    fixation.draw()
-                    win.flip()
                 
                 #showing only the frame for the imaginative task
-                elif CurrTimePoint in tasks[:,0]:
+                if CurrTimePoint in tasks[:,0]:
                     print('stimulus')
                     stimulus.play()
-                    fixation.draw()
-                    win.flip()
-                    
+                    curr_block = 't'
+                                        
                 elif CurrTimePoint in tasks[:,1]:
                     stop_stim.play()
                     print('stop')
+                    curr_block = 'b'
                     
                 #extract the map and plot the current position
-                elif CurrTimePoint in feedbacks[:,0]:
+                elif CurrTimePoint in feedbacks:
 
                     #extractiing tvalues from the ROI
                     #in this experimental paradigm we have only one contrast
+                    start = time.time()
                     tvalues = [TBV.get_map_value_of_voxel(0,coords)[0] 
                                     for coords in nf_coords]
 
                     #estimate nwe stimulus coordinates
                     stimulus_positions[idx_ctr,:] = rtRSAObj.target_positioning(tvalues)
                     
-                    
-                    #plotting the new coordinates
-                    if idx_ctr == 0:
-                        print('Contrast:',idx_ctr+1)
-                        plt.scatter(stimulus_positions[idx_ctr,0],
-                                    stimulus_positions[idx_ctr,1], 
-                                    marker = '*',s=200, color = 'red', 
-                                    edgecolors='black')
-                        ax.set_facecolor('dimgray')
-                        plt.xticks([])
-                        plt.yticks([])
-                        plt.axis('off')
-                    else:
-                        print('Contrast:',idx_ctr)
-                        plt.scatter(stimulus_positions[:idx_ctr,0],stimulus_positions[:idx_ctr,1], 
-                                    marker = '*',s=200, color = 'darkgray')
-                        plt.scatter(stimulus_positions[idx_ctr,0],stimulus_positions[idx_ctr,1], 
-                                    marker = '*',s=200, color = 'red', edgecolors='black')
-                        #plotting the trajectory
-                        plt.plot(stimulus_positions[:idx_ctr+1,0],stimulus_positions[:idx_ctr+1,1], '-',
-                                    color = 'green')
-                        ax.set_facecolor('dimgray')
-                        plt.xticks([])
-                        plt.yticks([])
-                        plt.axis('off')
-                            
-                    #save figure
-                    plt.savefig(os.path.join(outdir,'tvals_Trial' + str(idx_ctr)+ '.png'),
-                               facecolor='dimgray', edgecolor='none', dpi=300)
-                    #show the figure()
-                    image.setImage(os.path.join(outdir,'tvals_Trial' + str(idx_ctr)+ '.png'))
+                    #create the feedback
+                    create_visual_fb(idx_ctr,stimulus_positions,curr_block)
+
+                    print('Time to create feedback:',time.time()-start)
                     image.draw()
                     win.flip()
                     core.wait(fb_duration)
@@ -303,28 +345,9 @@ while TBV.get_current_time_point()[0] <= NrOfTimePoints:
                     #estimate new stimulus coordinates
                     stimulus_positions[idx_ctr,:] = rtRSAObj.target_positioning(tvalues)
                     
-                    #plotting the new coordinates
-                    print('Contrast:',idx_ctr+1)
-                    plt.scatter(stimulus_positions[:idx_ctr,0],stimulus_positions[:idx_ctr,1], 
-                                marker = '*',s=200, color = 'darkgray')
-                    for label, x, y in zip(range(idx_ctr),stimulus_positions[:idx_ctr,0],stimulus_positions[:idx_ctr,1]):
-                        plt.annotate(label,xy=(x, y), xytext=(-5, 5))
-                    plt.scatter(stimulus_positions[idx_ctr,0],stimulus_positions[idx_ctr,1], 
-                                marker = '*',s=200, color = 'red', edgecolors='black')
-                    #plotting the trajectory
-                    plt.plot(stimulus_positions[:idx_ctr+1,0],stimulus_positions[:idx_ctr+1,1],'-',
-                                color = 'green')
-                    ax.set_facecolor('dimgray')
-                    plt.xticks([])
-                    plt.yticks([])
-                    plt.axis('off')
-
-                            
-                    #save figure
-                    plt.savefig(os.path.join(outdir,'tvals_Trial' + str(idx_ctr)+ '.png'),
-                               facecolor='dimgray', edgecolor='none', dpi=300)
-                    #show the figure()
-                    image.setImage(os.path.join(outdir,'tvals_Trial' + str(idx_ctr)+ '.png'))
+                    #create the feedback
+                    create_visual_fb(idx_ctr,stimulus_positions,curr_block)
+                    
                     image.draw()
                     win.flip()
                     core.wait(fb_duration)
