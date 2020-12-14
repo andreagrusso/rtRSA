@@ -26,19 +26,15 @@ of the rtRSA.
 
 """
 from psychopy import core, visual, event
-import os
-import pickle
+import os,sys, pickle
 import numpy as np
 from expyriment_stash.extras.expyriment_io_extras import tbvnetworkinterface
-import matplotlib
+#import matplotlib
 #matplotlib.use('Agg') #to avoid display of the plot
 from matplotlib import pyplot as plt
 import matplotlib.lines as mlines
 from psychopy.sound import Sound
 from rtrsa import nfrsa
-import time, sys
-import pyglet.gl as GL
-import matplotlib.path as mpath
 
  
 
@@ -46,93 +42,135 @@ import matplotlib.path as mpath
 #                                 FUNCTIONS                                   #
 ###############################################################################
 
-
-
-def create_feedback(point,ax,idx_ctr,stimulus_positions,curr_block,img,win):
-    ax.set_facecolor('dimgray')
-
-    #ax.draw_artist(ax.patch)        # faster than redrawing the canvas
-    ax.draw_artist(point)# faster than redrawing the canvas
-    buf = fig.canvas.tostring_rgb() # make a bitmap
-	# convert bitmap to correct format for GL texture
-    tex = np.fromstring(buf, dtype=np.uint8).reshape(nrows, ncols, 3).astype(np.float32)/255
-    img._createTexture(tex, img._texID, GL.GL_RGB, img, forcePOW2=False) # set texture in video mem
-    img.draw()
-    win.flip()                      
-    #t1 = win.flip()                 # mark time on screen
-    #print("{:.3f} s/frame".format(t1-t0), end='\r') # show frame time
-    sys.stdout.flush()              # write text immediately
-    #t0 = t1                         # prepare for next iteration
-    #x += 0.01                       # change graph
-   # print((stimulus_positions[idx_ctr,:]))
-    #new_colors = np.concatenate([point.get_facecolors(), np.array(matplotlib.colors.to_rgba('r'), ndmin=2)])
-    #new_points = np.concatenate([point.get_offsets(),np.array(stimulus_positions[idx_ctr,:], ndmin=2)])
-    #new_sizes = np.concatenate([point.get_sizes(),np.array(300, ndmin=1)])
     
-    #point.set_offsets(new_points)
-    #point.set_facecolors(new_colors)
-    #point.set_sizes(new_sizes)
+def create_baseline_figure(rtRSAObj, image):
+    '''
     
-    ax.scatter(stimulus_positions[idx_ctr,0], stimulus_positions[idx_ctr,1],
-               marker = '*',s=200, color = 'red',edgecolors='black')   # change graph, faster than ax.clear, ax.plot
-    ax.plot(stimulus_positions[:idx_ctr-1,:],'--',color='black')
+    Parameters
+    ----------
+    rtRSAObj : Object class rtRSA
+        rtRSA object that contains all the info for the experiments (e.g. 
+        coordinates of the RS space, the inversion matrix and the base stimuli).
+    image : psychopy visual stimulus
+        This object contains all the information to deliver a visual stimulus 
+        to the subject.
+
+    Returns
+    -------
+    scat : scatter plot instance
+        Return the instance of the scatter plot created that has to be updated.
+    ax : matplotlib axis
+        Axis of the scatter plot created.
+
+    '''
+    
+    fig,ax = plt.subplots()
+    fig.set_facecolor('dimgray')
+    scat = ax.scatter(rtRSAObj.RS_coords[:,0],rtRSAObj.RS_coords[:,1],s=150, c='yellow',
+               edgecolors = 'black')
+    ax.axis('off')
+    
+    for label, x, y in zip(rtRSAObj.conditions, rtRSAObj.RS_coords[:,0],rtRSAObj.RS_coords[:,1]):
+        ax.annotate(label, xy=(x, y), xytext=(-20, 20),size=15,
+                     textcoords='offset points', ha='right', va='bottom',
+                     bbox=dict(boxstyle='round,pad=0.5', fc='yellow', alpha=1),
+                     arrowprops=dict(arrowstyle = '->', connectionstyle='arc3,rad=0')) 
+    
+    
+    yellow_circle = mlines.Line2D([], [], color='yellow',  linestyle='None', 
+                                  marker='o',markeredgecolor='black', markeredgewidth=0.5,
+                              markersize=15, label='Base stimuli')
+    red_star = mlines.Line2D([], [], color='red',linestyle='None',  marker='*',
+                             markeredgecolor='black', markeredgewidth=0.5,
+                              markersize=15, label='Current stimulus')
+    
+    ax.legend(handles=[yellow_circle, red_star],loc='upper center', bbox_to_anchor=(0.5, -0.05),ncol=4)
+    
+    
+    plt.savefig(os.path.join(outdir,'initial_img.png'), dpi=200,facecolor='dimgray')  
+    
+    # put it in an ImageStim
+    image.setImage(os.path.join(outdir,'initial_img.png'))
+    
+    return scat, ax
 
 
+def create_feedback(scat,ax,idx_ctr,stimulus_positions,curr_block,img,win):
+    '''
+    
 
-def create_visual_fb(idx_ctr,stimulus_positions,curr_block):
+    Parameters
+    ----------
+    scat : scatter plot instance
+        The initial scatter plot that has to be updated.
+    ax : matplotlib axis
+        The axes of the initial scatter plot.
+    idx_ctr : integer
+        Index to acces the stimulus positions array.
+    stimulus_positions : numpy array
+        Array that contains the stimulus positions for each feedback display.
+    curr_block : string
+        It indicates if we are in a task or in a rest block.
+    img : Psychopy visual object
+        It is a PsychoPy instance that contain the image to deliver to the subject.
+    win : PsychoPy windows
+        It is the PsychoPy window that hosts all the visual stimuli.
+
+    Returns
+    -------
+    new_scat : scatter plot instance
+        The matplot instance of the new scatter plot. It will be used to delete
+        in the next iteration the red star that indicates the previous feedback
+
+    '''
+      
 
     if idx_ctr == 0:
-        
-        print('Contrast:',idx_ctr+1)
-        plt.scatter(stimulus_positions[idx_ctr,0],
-                    stimulus_positions[idx_ctr,1], 
-                    marker = '*',s=200, color = 'red', 
-                    edgecolors='black')
-        if curr_block == 't':
-            plt.title('Imagine')
-        else:
-            plt.title('Rest')
-        ax.set_facecolor('dimgray')
-        plt.xticks([])
-        plt.yticks([])
-        plt.axis('off')
+        #first feedback        
+        new_scat = ax.scatter(stimulus_positions[idx_ctr,0],stimulus_positions[idx_ctr,1], 
+                    marker = '*',s=200, color = 'red', edgecolors='black')
         
     else:
-        print('Contrast:',idx_ctr)
-        plt.scatter(stimulus_positions[:idx_ctr,0],stimulus_positions[:idx_ctr,1], 
-                    marker = '*',s=200, color = 'darkgray')
-        plt.scatter(stimulus_positions[idx_ctr,0],stimulus_positions[idx_ctr,1], 
+        #from the second feedback onwards
+        new_scat = scat
+        #delete the reference to the point plotted for the previous iteration
+        new_scat.set_offsets(np.delete(scat.get_offsets(), 0, axis=0))
+        #plot the new position of the current mental state and, in dashed lines,
+        #the trajectory until now        
+        new_scat = ax.scatter(stimulus_positions[idx_ctr,0],stimulus_positions[idx_ctr,1], 
                     marker = '*',s=200, color = 'red', edgecolors='black')
-        #plotting the trajectory
-        plt.plot(stimulus_positions[:idx_ctr+1,0],stimulus_positions[:idx_ctr+1,1], '-',
-                    color = 'green')
-        if curr_block == 't':
-            plt.title('IMAGINE',size=30)
-        else:
-            plt.title('REST',size=30)
+        ax.plot(stimulus_positions[:idx_ctr+1,0],stimulus_positions[:idx_ctr+1,1], '--',
+                        color = 'black',alpha=0.2)
 
-        ax.set_facecolor('dimgray')
-        plt.xticks([])
-        plt.yticks([])
-        plt.axis('off')
+    ax.set_facecolor('dimgray')
+    plt.xticks([])
+    plt.yticks([])
+    plt.axis('off')
             
     #save figure
     plt.savefig(os.path.join(outdir,'tvals_Trial' + str(idx_ctr)+ '.png'),
                facecolor='dimgray', edgecolor='none', dpi=200)
-    #show the figure()
+    
+    #load and display the saved figure
     image.setImage(os.path.join(outdir,'tvals_Trial' + str(idx_ctr)+ '.png'))
+    image.draw()
+    win.flip()
+
+    return new_scat
 
 
-#%%
 
-#get current directory
-wdir = os.getcwd()
+
 
 
 
 #%%###########################################################################
 #                           Create an rtRSA object                           #
 ##############################################################################
+
+
+#get current directory
+wdir = os.getcwd()
 
 rtRSAObj = nfrsa.rtRSA('test_euclidean',2,'pearson')
 
@@ -172,7 +210,7 @@ image = visual.ImageStim(win,
                      depth=0, 
                      interpolate=False, 
                      flipHoriz=False, 
-                     flipVert=True, 
+                     flipVert=False, 
                      texRes=128, 
                      name=None, 
                      autoLog=None, 
@@ -211,7 +249,7 @@ globalClock = core.Clock()
 #                      THESE VARIABLES DEPEND ON                             #
 #                      THE EXPERIMENTAL DESIGN                               #
 ###############################################################################
-audio_stim_name = input('Insert the filename of the audio stimulus')
+audio_stim_name = input('Insert the filename of the audio stimulus:'  )
 
 #path of the stimulus
 stimulus_path = os.path.join(wdir,'sounds/stimuli/'+audio_stim_name +'.wav')
@@ -226,7 +264,7 @@ outdir = os.path.join(wdir,'output')
 baselines = pickle.load(open(os.path.join(wdir,'prt/new_paradigm/baselines.pkl'),'rb'))
 tasks = pickle.load(open(os.path.join(wdir,'prt/new_paradigm/tasks.pkl'),'rb'))
 feedbacks = pickle.load(open(os.path.join(wdir,'prt/new_paradigm/feedbacks_with_baseline.pkl'),'rb'))
-fb_duration = 4.8
+feedbacks = feedbacks-3
 
 nr_of_trials = feedbacks.shape[0]
 
@@ -236,57 +274,14 @@ stimulus_positions = np.empty((nr_of_trials+1,2))
 #index of the constrast maps
 idx_ctr = 0
 
-
-#%%############################################################################
-#                     Create a plot of the base stimuli                       #
-###############################################################################
-    
-
-
-
-fig,ax = plt.subplots()
-fig.set_facecolor('dimgray')
-
-# ax = plt.axes()
-point = ax.scatter(rtRSAObj.RS_coords[:,0],rtRSAObj.RS_coords[:,1],s=150, c='yellow',
-           edgecolors = 'black')
-ax.axis('off')
-
-for label, x, y in zip(rtRSAObj.conditions, rtRSAObj.RS_coords[:,0],rtRSAObj.RS_coords[:,1]):
-    ax.annotate(label, xy=(x, y), xytext=(20, -20),size=15,
-                 textcoords='offset points', ha='right', va='bottom',
-                 bbox=dict(boxstyle='round,pad=0.5', fc='yellow', alpha=1),
-                 arrowprops=dict(arrowstyle = '->', connectionstyle='arc3,rad=0')) 
-
-
-yellow_circle = mlines.Line2D([], [], color='yellow',  linestyle='None', 
-                              marker='o',markeredgecolor='black', markeredgewidth=0.5,
-                          markersize=15, label='Base stimuli')
-red_star = mlines.Line2D([], [], color='red',linestyle='None',  marker='*',
-                         markeredgecolor='black', markeredgewidth=0.5,
-                          markersize=15, label='Current stimulus')
-
-ax.legend(handles=[yellow_circle, red_star],
-    loc='upper center', bbox_to_anchor=(0.5, -0.05),ncol=4)
-plt.savefig(os.path.join(outdir,'initial_img.png'), dpi=80,facecolor='dimgray')   # must be set to 80, this is what tostring_rgb does also
-ncols, nrows = fig.canvas.get_width_height()
-
-# put it in an ImageStim
-image.setImage(os.path.join(outdir,'initial_img.png'))
-stimulus_positions = np.random.random(size=(10,2))
-    
-for i in range(10):
-    plt.pause(2)
-    print(i)
-    curr_block = 't'
-
-    idx_ctr = i
-    create_feedback(point,ax,idx_ctr,stimulus_positions,curr_block,image,win)
-
 #%%############################################################################
 #                             Reading data from TBV                           #
 ###############################################################################
 timepoint_timing = []
+
+scat, ax = create_baseline_figure(rtRSAObj,image)
+print('Baseline figure created!')
+
 
 
 #USEFUl FOR OTHER SCANNERS AND SIMULATIONS
@@ -330,21 +325,21 @@ while TBV.get_current_time_point()[0] <= NrOfTimePoints:
         if NrOfROIs == 0:                
             print('Please add a ROI')
             NrOfROIs = TBV.get_nr_of_rois()[0]
-            
-            
+            #THE ACTUAL EXPERIMENT STARTS ONLY IF THERE IS A ROI!!!!!!#
+                       
         else:
             
             if not raw_nf_coords:
-                raw_nf_coords = TBV.get_all_coords_of_voxels_of_roi(0)[0]
-                    
+                
+                #matching the current FMR coords with the ones of the localizer
+                raw_nf_coords = TBV.get_all_coords_of_voxels_of_roi(0)[0]                    
                 nf_coords = rtRSAObj.match_coords(raw_nf_coords)
+                
             #needed to avoid accessing to timepoint -1 (fake) or timepoint 0
             if CurrTimePoint > 1 :
-                #THE ACTUAL EXPERIMENT STARTS ONLY IF THERE IS A ROI!!!!!!#
-                fixation.draw()
+                image.draw()
                 win.flip()
-
-                
+               
                 #showing only the frame for the imaginative task
                 if CurrTimePoint in tasks[:,0]:
                     print('stimulus')
@@ -359,9 +354,8 @@ while TBV.get_current_time_point()[0] <= NrOfTimePoints:
                 #extract the map and plot the current position
                 elif CurrTimePoint in feedbacks:
 
-                    #extractiing tvalues from the ROI
+                    #extracting tvalues from the ROI
                     #in this experimental paradigm we have only one contrast
-                    start = time.time()
                     tvalues = [TBV.get_map_value_of_voxel(0,coords)[0] 
                                     for coords in nf_coords]
 
@@ -369,18 +363,15 @@ while TBV.get_current_time_point()[0] <= NrOfTimePoints:
                     stimulus_positions[idx_ctr,:] = rtRSAObj.target_positioning(tvalues)
                     
                     #create the feedback
-                    create_visual_fb(idx_ctr,stimulus_positions,curr_block)
-
-                    print('Time to create feedback:',time.time()-start)
-                    image.draw()
-                    win.flip()
-                    core.wait(fb_duration)
-                    
+                    if idx_ctr == 0:
+                        new_scat = create_feedback(scat,ax,idx_ctr,stimulus_positions,curr_block,image,win)
+                    else:
+                        new_scat = create_feedback(new_scat,ax,idx_ctr,stimulus_positions,curr_block,image,win)
+                  
                     #increment the index of the contrast map
                     idx_ctr += 1
                     
                 elif CurrTimePoint == NrOfTimePoints:
-                    print('Last time point!')
                     #contrast number is fixed for the simulation
                     #extract tvalues at the corresponding coordinates
                     tvalues = [TBV.get_map_value_of_voxel(0,coords)[0] 
@@ -390,30 +381,29 @@ while TBV.get_current_time_point()[0] <= NrOfTimePoints:
                     stimulus_positions[idx_ctr,:] = rtRSAObj.target_positioning(tvalues)
                     
                     #create the feedback
-                    create_visual_fb(idx_ctr,stimulus_positions,curr_block)
+                    new_scat = create_feedback(new_scat,ax,idx_ctr,stimulus_positions,curr_block,image,win)
                     
-                    image.draw()
-                    win.flip()
-                    core.wait(fb_duration)
-                    
+                    print('Last time point!')
+
                     break
 
-                else:
-                    fixation.draw()
-                    win.flip()
                        
 
                     
               
-plt.close()
+#plt.close()
 
-win.close()
 
 
 with open(os.path.join(outdir,'timepoint_timing_incrementalGLM.txt'), 'w') as f:
     for item in timepoint_timing:
         f.write("%s\n" % item) 
 f.close()            
+
+pickle.dump(stimulus_positions,open(os.path.join(outdir,'feedback_positions.pkl'),'wb'))
+
+
+win.close()
 
 
 
