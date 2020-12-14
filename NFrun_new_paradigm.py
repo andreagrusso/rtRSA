@@ -31,16 +31,52 @@ import pickle
 import numpy as np
 from expyriment_stash.extras.expyriment_io_extras import tbvnetworkinterface
 import matplotlib
-matplotlib.use('Agg') #to avoid display of the plot
+#matplotlib.use('Agg') #to avoid display of the plot
 from matplotlib import pyplot as plt
 import matplotlib.lines as mlines
 from psychopy.sound import Sound
 from rtrsa import nfrsa
-import time 
+import time, sys
+import pyglet.gl as GL
+import matplotlib.path as mpath
+
+ 
 
 #%%############################################################################
 #                                 FUNCTIONS                                   #
 ###############################################################################
+
+
+
+def create_feedback(point,ax,idx_ctr,stimulus_positions,curr_block,img,win):
+    ax.set_facecolor('dimgray')
+
+    #ax.draw_artist(ax.patch)        # faster than redrawing the canvas
+    ax.draw_artist(point)# faster than redrawing the canvas
+    buf = fig.canvas.tostring_rgb() # make a bitmap
+	# convert bitmap to correct format for GL texture
+    tex = np.fromstring(buf, dtype=np.uint8).reshape(nrows, ncols, 3).astype(np.float32)/255
+    img._createTexture(tex, img._texID, GL.GL_RGB, img, forcePOW2=False) # set texture in video mem
+    img.draw()
+    win.flip()                      
+    #t1 = win.flip()                 # mark time on screen
+    #print("{:.3f} s/frame".format(t1-t0), end='\r') # show frame time
+    sys.stdout.flush()              # write text immediately
+    #t0 = t1                         # prepare for next iteration
+    #x += 0.01                       # change graph
+   # print((stimulus_positions[idx_ctr,:]))
+    #new_colors = np.concatenate([point.get_facecolors(), np.array(matplotlib.colors.to_rgba('r'), ndmin=2)])
+    #new_points = np.concatenate([point.get_offsets(),np.array(stimulus_positions[idx_ctr,:], ndmin=2)])
+    #new_sizes = np.concatenate([point.get_sizes(),np.array(300, ndmin=1)])
+    
+    #point.set_offsets(new_points)
+    #point.set_facecolors(new_colors)
+    #point.set_sizes(new_sizes)
+    
+    ax.scatter(stimulus_positions[idx_ctr,0], stimulus_positions[idx_ctr,1],
+               marker = '*',s=200, color = 'red',edgecolors='black')   # change graph, faster than ax.clear, ax.plot
+    ax.plot(stimulus_positions[:idx_ctr-1,:],'--',color='black')
+
 
 
 def create_visual_fb(idx_ctr,stimulus_positions,curr_block):
@@ -136,7 +172,7 @@ image = visual.ImageStim(win,
                      depth=0, 
                      interpolate=False, 
                      flipHoriz=False, 
-                     flipVert=False, 
+                     flipVert=True, 
                      texRes=128, 
                      name=None, 
                      autoLog=None, 
@@ -176,7 +212,6 @@ globalClock = core.Clock()
 #                      THE EXPERIMENTAL DESIGN                               #
 ###############################################################################
 audio_stim_name = input('Insert the filename of the audio stimulus')
-total_volumes = input('Insert thetotal_volumes')
 
 #path of the stimulus
 stimulus_path = os.path.join(wdir,'sounds/stimuli/'+audio_stim_name +'.wav')
@@ -191,7 +226,7 @@ outdir = os.path.join(wdir,'output')
 baselines = pickle.load(open(os.path.join(wdir,'prt/new_paradigm/baselines.pkl'),'rb'))
 tasks = pickle.load(open(os.path.join(wdir,'prt/new_paradigm/tasks.pkl'),'rb'))
 feedbacks = pickle.load(open(os.path.join(wdir,'prt/new_paradigm/feedbacks_with_baseline.pkl'),'rb'))
-fb_duration = 5
+fb_duration = 4.8
 
 nr_of_trials = feedbacks.shape[0]
 
@@ -205,22 +240,20 @@ idx_ctr = 0
 #%%############################################################################
 #                     Create a plot of the base stimuli                       #
 ###############################################################################
+    
 
-#setting a basic plot figure
-plt.ion()
-fig = plt.figure()
 
-plt.figure(facecolor='dimgray')
-ax = plt.axes()
-ax.scatter(rtRSAObj.RS_coords[:,0],rtRSAObj.RS_coords[:,1],s=150, c='yellow',
+
+fig,ax = plt.subplots()
+fig.set_facecolor('dimgray')
+
+# ax = plt.axes()
+point = ax.scatter(rtRSAObj.RS_coords[:,0],rtRSAObj.RS_coords[:,1],s=150, c='yellow',
            edgecolors = 'black')
-# Setting the background color
-ax.set_facecolor('dimgray')
-plt.xticks([])
-plt.yticks([])
-plt.axis('off')
+ax.axis('off')
+
 for label, x, y in zip(rtRSAObj.conditions, rtRSAObj.RS_coords[:,0],rtRSAObj.RS_coords[:,1]):
-    plt.annotate(label, xy=(x, y), xytext=(20, -20),size=15,
+    ax.annotate(label, xy=(x, y), xytext=(20, -20),size=15,
                  textcoords='offset points', ha='right', va='bottom',
                  bbox=dict(boxstyle='round,pad=0.5', fc='yellow', alpha=1),
                  arrowprops=dict(arrowstyle = '->', connectionstyle='arc3,rad=0')) 
@@ -233,11 +266,22 @@ red_star = mlines.Line2D([], [], color='red',linestyle='None',  marker='*',
                          markeredgecolor='black', markeredgewidth=0.5,
                           markersize=15, label='Current stimulus')
 
-plt.legend(handles=[yellow_circle, red_star],
+ax.legend(handles=[yellow_circle, red_star],
     loc='upper center', bbox_to_anchor=(0.5, -0.05),ncol=4)
+plt.savefig(os.path.join(outdir,'initial_img.png'), dpi=80,facecolor='dimgray')   # must be set to 80, this is what tostring_rgb does also
+ncols, nrows = fig.canvas.get_width_height()
 
+# put it in an ImageStim
+image.setImage(os.path.join(outdir,'initial_img.png'))
+stimulus_positions = np.random.random(size=(10,2))
+    
+for i in range(10):
+    plt.pause(2)
+    print(i)
+    curr_block = 't'
 
-
+    idx_ctr = i
+    create_feedback(point,ax,idx_ctr,stimulus_positions,curr_block,image,win)
 
 #%%############################################################################
 #                             Reading data from TBV                           #
