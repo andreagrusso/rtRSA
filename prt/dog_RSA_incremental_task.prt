@@ -1,0 +1,44 @@
+
+FileVersion:        2
+
+ResolutionOfTime:   Volumes
+
+Experiment:         RSA Pilot 1st run dog
+
+BackgroundColor:    0 0 0
+TextColor:          255 255 255
+TimeCourseColor:    255 255 255
+TimeCourseThick:    3
+ReferenceFuncColor: 0 0 80
+ReferenceFuncThick: 3
+
+NrOfConditions:     2
+
+Baseline
+11
+   1   20
+  41   60
+  81  100
+ 121  140
+ 161  180
+ 201  220
+ 241  260
+ 281  300
+ 321  340
+ 361  380
+ 401  420
+Color: 0 0 255
+
+Task
+10
+  21   40
+  61   80
+ 101  120
+ 141  160
+ 181  200
+ 221  240
+ 261  280
+ 301  320
+ 341  360
+ 381  400
+Color: 255 0 0

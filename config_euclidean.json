@@ -1,0 +1,11 @@
+{
+    "metric": 2,
+    "n_comp": 2,
+    "name": "euclidean_paper_data",
+    "rdm": "C:\\Users\\andre\\Documents\\TBVData\\rtRSA_5Dec2019\\TBVFiles\\test_11Dec2020\\euclidean_test11Dec20\\euclidean_paper_data.rdm",
+    "base_stimuli": "C:\\Users\\andre\\Documents\\TBVData\\rtRSA_5Dec2019\\TBVFiles\\test_11Dec2020\\euclidean_test11Dec20\\euclidean_paper_data.tvals",
+    "rs_coords": "C:\\Users\\andre\\Documents\\TBVData\\rtRSA_5Dec2019\\TBVFiles\\test_11Dec2020\\euclidean_test11Dec20\\euclidean_paper_data.rsc",
+    "inv_mat": "C:\\Users\\andre\\Documents\\TBVData\\rtRSA_5Dec2019\\TBVFiles\\test_11Dec2020\\euclidean_test11Dec20\\euclidean_paper_data.mat",
+    "func_coords": "C:\\Users\\andre\\Documents\\TBVData\\rtRSA_5Dec2019\\TBVFiles\\test_11Dec2020\\euclidean_test11Dec20\\euclidean_paper_data.fnc",
+    "conditions": "C:\\Users\\andre\\Documents\\TBVData\\rtRSA_5Dec2019\\TBVFiles\\test_11Dec2020\\euclidean_test11Dec20\\euclidean_paper_data.cnd"
+}
