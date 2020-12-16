@@ -95,7 +95,7 @@ def create_baseline_figure(rtRSAObj, image):
     return scat, ax
 
 
-def create_feedback(scat,ax,idx_ctr,stimulus_positions,curr_block,img,win):
+def create_feedback(scat,ax,idx_fb,stimulus_positions,img,win):
     '''
     
 
@@ -105,7 +105,7 @@ def create_feedback(scat,ax,idx_ctr,stimulus_positions,curr_block,img,win):
         The initial scatter plot that has to be updated.
     ax : matplotlib axis
         The axes of the initial scatter plot.
-    idx_ctr : integer
+    idx_fb : integer
         Index to acces the stimulus positions array.
     stimulus_positions : numpy array
         Array that contains the stimulus positions for each feedback display.
@@ -125,9 +125,9 @@ def create_feedback(scat,ax,idx_ctr,stimulus_positions,curr_block,img,win):
     '''
       
 
-    if idx_ctr == 0:
+    if idx_fb == 0:
         #first feedback        
-        new_scat = ax.scatter(stimulus_positions[idx_ctr,0],stimulus_positions[idx_ctr,1], 
+        new_scat = ax.scatter(stimulus_positions[idx_fb,0],stimulus_positions[idx_fb,1], 
                     marker = '*',s=200, color = 'red', edgecolors='black')
         
     else:
@@ -137,9 +137,9 @@ def create_feedback(scat,ax,idx_ctr,stimulus_positions,curr_block,img,win):
         new_scat.set_offsets(np.delete(scat.get_offsets(), 0, axis=0))
         #plot the new position of the current mental state and, in dashed lines,
         #the trajectory until now        
-        new_scat = ax.scatter(stimulus_positions[idx_ctr,0],stimulus_positions[idx_ctr,1], 
+        new_scat = ax.scatter(stimulus_positions[idx_fb,0],stimulus_positions[idx_fb,1], 
                     marker = '*',s=200, color = 'red', edgecolors='black')
-        ax.plot(stimulus_positions[:idx_ctr+1,0],stimulus_positions[:idx_ctr+1,1], '--',
+        ax.plot(stimulus_positions[:idx_fb+1,0],stimulus_positions[:idx_fb+1,1], '--',
                         color = 'black',alpha=0.2)
 
     ax.set_facecolor('dimgray')
@@ -148,11 +148,11 @@ def create_feedback(scat,ax,idx_ctr,stimulus_positions,curr_block,img,win):
     plt.axis('off')
             
     #save figure
-    plt.savefig(os.path.join(outdir,'tvals_Trial' + str(idx_ctr)+ '.png'),
+    plt.savefig(os.path.join(outdir,'tvals_Trial' + str(idx_fb)+ '.png'),
                facecolor='dimgray', edgecolor='none', dpi=200)
     
     #load and display the saved figure
-    image.setImage(os.path.join(outdir,'tvals_Trial' + str(idx_ctr)+ '.png'))
+    image.setImage(os.path.join(outdir,'tvals_Trial' + str(idx_fb)+ '.png'))
     image.draw()
     win.flip()
 
@@ -261,17 +261,19 @@ stop_stim = Sound(stop_wav)
 outdir = os.path.join(wdir,'output')
 
 #condition timings
-baselines = pickle.load(open(os.path.join(wdir,'prt/new_paradigm/baselines.pkl'),'rb'))
-tasks = pickle.load(open(os.path.join(wdir,'prt/new_paradigm/tasks.pkl'),'rb'))
-feedbacks = pickle.load(open(os.path.join(wdir,'prt/new_paradigm/feedbacks_with_baseline.pkl'),'rb'))
-feedbacks = feedbacks-3
+baselines = pickle.load(open(os.path.join(wdir,'prt/continuous/baselines.pkl'),'rb'))
+tasks = pickle.load(open(os.path.join(wdir,'prt/continuous/tasks.pkl'),'rb'))
+feedbacks = pickle.load(open(os.path.join(wdir,'prt/continuous/feedbacks.pkl'),'rb'))
 
 nr_of_trials = feedbacks.shape[0]
 
 #variable to store positions of the stimulus in time
 stimulus_positions = np.empty((nr_of_trials+1,2))
 
-#index of the constrast maps
+#index of the feedbacks
+idx_fb = 0
+
+#index of the contrast map. TBV needs to know which contrast map we want
 idx_ctr = 0
 
 #%%############################################################################
@@ -336,56 +338,58 @@ while TBV.get_current_time_point()[0] <= NrOfTimePoints:
                 nf_coords = rtRSAObj.match_coords(raw_nf_coords)
                 
             #needed to avoid accessing to timepoint -1 (fake) or timepoint 0
-            if CurrTimePoint > 1 :
-                image.draw()
+            while CurrTimePoint < baselines[0,0] :
+                fixation.draw()
                 win.flip()
                
-                #showing only the frame for the imaginative task
-                if CurrTimePoint in tasks[:,0]:
-                    print('stimulus')
-                    stimulus.play()
-                    curr_block = 't'
-                                        
-                elif CurrTimePoint in tasks[:,1]:
-                    stop_stim.play()
-                    print('stop')
-                    curr_block = 'b'
-                    
-                #extract the map and plot the current position
-                elif CurrTimePoint in feedbacks:
+            #showing only the frame for the imaginative task
+            if CurrTimePoint in tasks[:,0]:
+                print('stimulus')
+                stimulus.play()
+                                    
+            elif CurrTimePoint in baselines[1:,0]:
+                stop_stim.play()
+                print('stop')
+                fixation.draw()
+                win.flip()
+                
+            #extract the map and plot the current position
+            elif CurrTimePoint in feedbacks:
+                
+                print('f')
 
-                    #extracting tvalues from the ROI
-                    #in this experimental paradigm we have only one contrast
-                    tvalues = [TBV.get_map_value_of_voxel(0,coords)[0] 
-                                    for coords in nf_coords]
+                #extracting tvalues from the ROI
+                #in this experimental paradigm we have only one contrast
+                tvalues = [TBV.get_map_value_of_voxel(idx_ctr,coords)[0] 
+                                for coords in nf_coords]
 
-                    #estimate nwe stimulus coordinates
-                    stimulus_positions[idx_ctr,:] = rtRSAObj.target_positioning(tvalues)
-                    
-                    #create the feedback
-                    if idx_ctr == 0:
-                        new_scat = create_feedback(scat,ax,idx_ctr,stimulus_positions,curr_block,image,win)
-                    else:
-                        new_scat = create_feedback(new_scat,ax,idx_ctr,stimulus_positions,curr_block,image,win)
-                  
-                    #increment the index of the contrast map
-                    idx_ctr += 1
-                    
-                elif CurrTimePoint == NrOfTimePoints:
-                    #contrast number is fixed for the simulation
-                    #extract tvalues at the corresponding coordinates
-                    tvalues = [TBV.get_map_value_of_voxel(0,coords)[0] 
-                               for coords in nf_coords]
-                    
-                    #estimate new stimulus coordinates
-                    stimulus_positions[idx_ctr,:] = rtRSAObj.target_positioning(tvalues)
-                    
-                    #create the feedback
-                    new_scat = create_feedback(new_scat,ax,idx_ctr,stimulus_positions,curr_block,image,win)
-                    
-                    print('Last time point!')
+                #estimate nwe stimulus coordinates
+                stimulus_positions[idx_fb,:] = rtRSAObj.target_positioning(tvalues)
+                
+                #create the feedback
+                if idx_fb == 0:
+                    new_scat = create_feedback(scat,ax,idx_fb,stimulus_positions,image,win)
+                else:
+                    new_scat = create_feedback(new_scat,ax,idx_fb,stimulus_positions,image,win)
+              
+                #increment the index of the contrast map
+                idx_fb += 1
+                
+            elif CurrTimePoint == NrOfTimePoints:
+                #contrast number is fixed for the simulation
+                #extract tvalues at the corresponding coordinates
+                tvalues = [TBV.get_map_value_of_voxel(idx_ctr,coords)[0] 
+                           for coords in nf_coords]
+                
+                #estimate new stimulus coordinates
+                stimulus_positions[idx_fb,:] = rtRSAObj.target_positioning(tvalues)
+                
+                #create the feedback
+                new_scat = create_feedback(new_scat,ax,idx_fb,stimulus_positions,image,win)
+                
+                print('Last time point!')
 
-                    break
+                break
 
                        
 
