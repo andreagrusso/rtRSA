@@ -52,8 +52,7 @@ baselines = np.vstack((onset[baseline_index],offset[baseline_index])).T
 task_index = np.arange(1,len(onset),2)
 tasks = np.vstack((onset[task_index],offset[task_index])).T
 
-feedbacks_w_baseline = np.arange(tasks[0,0]+5,baselines[-1,0],5)
-feedbacks_wo_baseline = np.array([np.arange(tasks[i,0]+5,tasks[i,1],5)
+feedbacks = np.array([np.arange(tasks[i,0]+2,tasks[i,1],5)
                          for i in range(len(tasks)-1)]).reshape(-1,1)
 
 #%%############################################################################
@@ -72,7 +71,7 @@ for im in conditions:
         protocol.add_condition(prt.Condition(im_name + '_' + str(i), tasks[i,:].reshape((1,2)),colour=[255, i, 0]))
 
         
-    protocol.save(os.path.join(outdir, im_name +'_RSA_individual_task.prt'))  
+    protocol.save(os.path.join(outdir,'continuous', im_name +'_RSA_individual_task.prt'))  
 
 #incremental prt    
 for im in conditions:
@@ -86,17 +85,16 @@ for im in conditions:
     protocol.add_condition(prt.Condition("Task", tasks ,colour=[255, 0, 0]))
 
         
-    protocol.save(os.path.join(outdir, im_name +'_RSA_incremental_task.prt')) 
+    protocol.save(os.path.join(outdir, 'continuous', im_name +'_RSA_incremental_task.prt')) 
 
     
-f=open(os.path.join(outdir,'new_paradigm','baselines.pkl'),'wb')
+f=open(os.path.join(outdir,'continuous','baselines.pkl'),'wb')
 pickle.dump(baselines,f)
 
 
-f=open(os.path.join(outdir,'new_paradigm','tasks.pkl'),'wb')
+f=open(os.path.join(outdir,'continuous','tasks.pkl'),'wb')
 pickle.dump(tasks,f)
 
-f=open(os.path.join(outdir,'new_paradigm','feedbacks_with_baseline.pkl'),'wb')
-pickle.dump(feedbacks_w_baseline,f)
-f=open(os.path.join(outdir,'new_paradigm','feedbacks_without_baseline.pkl'),'wb')
-pickle.dump(feedbacks_wo_baseline,f)
+
+f=open(os.path.join(outdir,'continuous','feedbacks.pkl'),'wb')
+pickle.dump(feedbacks,f)
