@@ -287,15 +287,15 @@ print('Baseline figure created!')
 
 
 #USEFUl FOR OTHER SCANNERS AND SIMULATIONS
-#while '5' not in event.getKeys(['5']):
-#    print('Waiting scanner....')
-
-
-serFmri = serial.Serial('COM1', 57600)
-prevState = serFmri.getDSR()
-
-while serFmri.getDSR() == prevState:
+while '5' not in event.getKeys(['5']):
     print('Waiting scanner....')
+
+
+# serFmri = serial.Serial('COM1', 57600)
+# prevState = serFmri.getDSR()
+
+# while serFmri.getDSR() == prevState:
+#     print('Waiting scanner....')
    
 
 globalClock.reset()    
@@ -339,28 +339,29 @@ while TBV.get_current_time_point()[0] <= NrOfTimePoints+1:
                 
             #needed to avoid accessing to timepoint -1 (fake) or timepoint 0
             # while CurrTimePoint < baselines[0,0] :
-            #     fixation.draw()
+            #fixation.draw()
             #     win.flip()
                
             #showing only the frame for the imaginative task
             if CurrTimePoint in tasks[:,0]:
                 print('stimulus')
                 stimulus.play()
-                                    
-            elif CurrTimePoint in baselines[:,0]:
+                
+            elif CurrTimePoint in baselines[1:,0]:
                 stop_stim.play()
                 print('stop')
                 fixation.draw()
                 win.flip()
+                #switch to the next contrast
+                idx_ctr += 1
                 
             #extract the map and plot the current position
             elif CurrTimePoint in feedbacks:
-                
+                print(idx_ctr)
                 #extracting tvalues from the ROI
                 #in this experimental paradigm we have only one contrast
                 tvalues = [TBV.get_map_value_of_voxel(idx_ctr,coords)[0] 
                                 for coords in nf_coords]
-
                 #estimate nwe stimulus coordinates
                 stimulus_positions[idx_fb,:] = rtRSAObj.target_positioning(tvalues)
                 
