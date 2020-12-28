@@ -52,7 +52,7 @@ baselines = np.vstack((onset[baseline_index],offset[baseline_index])).T
 task_index = np.arange(1,len(onset),2)
 tasks = np.vstack((onset[task_index],offset[task_index])).T
 
-feedbacks = np.array([np.arange(tasks[i,0]+1,tasks[i,1],2)
+feedbacks = np.array([np.arange(tasks[i,0]+5,tasks[i,1],2)
                          for i in range(len(tasks))]).reshape(-1,1)
 
 #%%############################################################################
