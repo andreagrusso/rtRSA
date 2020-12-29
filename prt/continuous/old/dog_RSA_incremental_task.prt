@@ -3,7 +3,7 @@ FileVersion:        2
 
 ResolutionOfTime:   Volumes
 
-Experiment:         RSA Pilot 1st run cat
+Experiment:         RSA Pilot 1st run dog
 
 BackgroundColor:    0 0 0
 TextColor:          255 255 255
@@ -17,28 +17,28 @@ NrOfConditions:     2
 Baseline
 11
    1   20
-  61   80
+  41   60
+  81  100
  121  140
- 181  200
+ 161  180
+ 201  220
  241  260
- 301  320
+ 281  300
+ 321  340
  361  380
- 421  440
- 481  500
- 541  560
- 601  620
+ 401  420
 Color: 0 0 255
 
 Task
 10
-  21   60
-  81  120
- 141  180
- 201  240
- 261  300
- 321  360
- 381  420
- 441  480
- 501  540
- 561  600
+  21   40
+  61   80
+ 101  120
+ 141  160
+ 181  200
+ 221  240
+ 261  280
+ 301  320
+ 341  360
+ 381  400
 Color: 255 0 0
