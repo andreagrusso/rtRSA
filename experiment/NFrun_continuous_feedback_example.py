@@ -378,7 +378,7 @@ while TBV.get_current_time_point()[0] <= NrOfTimePoints+1:
                 #extract tvalues at the corresponding coordinates
                 tvalues = [TBV.get_map_value_of_voxel(idx_ctr,coords)[0] 
                            for coords in nf_coords]
-                print(tvalues)
+                #print(tvalues)
                 #estimate new stimulus coordinates
                 stimulus_positions[idx_fb,:] = rtRSAObj.target_positioning(tvalues)
                 
