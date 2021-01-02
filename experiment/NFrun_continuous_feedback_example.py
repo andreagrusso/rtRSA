@@ -172,12 +172,12 @@ def create_feedback(scat,ax,idx_fb,stimulus_positions,img,win):
 #get current directory
 wdir = os.getcwd()
 
-rtRSAObj = nfrsa.rtRSA('test_euclidean',2,'pearson')
+rtRSAObj = nfrsa.rtRSA('mician_itc',2,'euclidean')
 
 #load properties in the just created rtRSAObj
 #the config.json file can be created by using one of the class method
 #the file si wirtten after the estimation of the RS
-rtRSAObj.load(os.path.join(wdir,'config_euclidean.json'))
+rtRSAObj.load(os.path.join(wdir,'mician_itc.json'))
 print('rtRSA ready!\n')
 print('Nr of voxels: ',+ len(rtRSAObj.func_coords))
 print('Base stimuli name:')
@@ -335,7 +335,7 @@ while TBV.get_current_time_point()[0] <= NrOfTimePoints+1:
                 
                 #matching the current FMR coords with the ones of the localizer
                 raw_nf_coords = TBV.get_all_coords_of_voxels_of_roi(0)[0]                    
-                nf_coords = rtRSAObj.match_coords(raw_nf_coords)
+                nf_coords = rtRSAObj.match_coords(np.array(raw_nf_coords))
                 
             #needed to avoid accessing to timepoint -1 (fake) or timepoint 0
             # while CurrTimePoint < baselines[0,0] :
