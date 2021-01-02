@@ -504,6 +504,7 @@ class rtRSA:
             be used to extract the tvalues to apply the rtRSA.
 
         """
+
         #find centroid of the current coords
         c_trg = (np.sum(curr_coords,axis=0)/len(curr_coords)).reshape(1,-1) 
         
@@ -520,6 +521,7 @@ class rtRSA:
             coords2del = sort_idx[-delta-1:-1]
             nf_coords = np.delete(curr_coords,coords2del,axis=0)
             nf_coords = nf_coords.astype(int)
+
             
             print('Most distant voxels deleted')
         
@@ -527,8 +529,8 @@ class rtRSA:
         elif (delta < 0):
             
             #find the min and the max of the coordinates over the coordinates
-            bbox_edges = np.array([np.min(curr_coords[:,:-1],axis=0),
-                             np.max(curr_coords[:,:-1],axis=0)])
+            bbox_edges = np.array([np.min(curr_coords,axis=0),
+                             np.max(curr_coords,axis=0)])
             
             #create a bounding-box of coordinates
             bbox = np.mgrid[int(bbox_edges[0,0]):int(bbox_edges[1,0]+1),
@@ -544,10 +546,10 @@ class rtRSA:
             tmp_dist = euclidean_distances(surplus_voxels,c_trg)
             sort_idx = np.argsort(tmp_dist,axis=0)
             coords2add = sort_idx[:-delta]
-            nf_coords = np.vstack((curr_coords[:,:-1].astype(int),
+            nf_coords = np.vstack((curr_coords.astype(int),
                                          surplus_voxels[coords2add,:].reshape(abs(delta),3)))
                
-            
+            print(delta,'voxels added to the ROI') 
         else:
             #the lucky situation when the number of coordinates are the same
             print('Same number of voxels! Lucky you!')
