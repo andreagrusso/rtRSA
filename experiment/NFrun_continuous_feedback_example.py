@@ -287,15 +287,15 @@ print('Baseline figure created!')
 
 
 #USEFUl FOR OTHER SCANNERS AND SIMULATIONS
-#while '5' not in event.getKeys(['5']):
-#    print('Waiting scanner....')
-
-
-serFmri = serial.Serial('COM1', 57600)
-prevState = serFmri.getDSR()
-
-while serFmri.getDSR() == prevState:
+while '5' not in event.getKeys(['5']):
     print('Waiting scanner....')
+
+
+#serFmri = serial.Serial('COM1', 57600)
+#prevState = serFmri.getDSR()
+
+#while serFmri.getDSR() == prevState:
+#    print('Waiting scanner....')
    
 
 globalClock.reset()    

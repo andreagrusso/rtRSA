@@ -1,0 +1,104 @@
+
+FileVersion:        2
+
+ResolutionOfTime:   Volumes
+
+Experiment:         RSA Pilot 1st run hammer
+
+BackgroundColor:    0 0 0
+TextColor:          255 255 255
+TimeCourseColor:    255 255 255
+TimeCourseThick:    3
+ReferenceFuncColor: 0 0 80
+ReferenceFuncThick: 3
+
+NrOfConditions:     12
+
+Baseline
+21
+   1   20
+  41   60
+  66   85
+ 106  125
+ 131  150
+ 171  190
+ 196  215
+ 236  255
+ 261  280
+ 301  320
+ 326  345
+ 366  385
+ 391  410
+ 431  450
+ 456  475
+ 496  515
+ 521  540
+ 561  580
+ 586  605
+ 626  645
+ 651  670
+Color: 0 0 255
+
+hammer_0
+1
+ 21  40
+Color: 255 0 0
+
+hammer_1
+1
+  86  105
+Color: 255 1 0
+
+hammer_2
+1
+ 151  170
+Color: 255 2 0
+
+hammer_3
+1
+ 216  235
+Color: 255 3 0
+
+hammer_4
+1
+ 281  300
+Color: 255 4 0
+
+hammer_5
+1
+ 346  365
+Color: 255 5 0
+
+hammer_6
+1
+ 411  430
+Color: 255 6 0
+
+hammer_7
+1
+ 476  495
+Color: 255 7 0
+
+hammer_8
+1
+ 541  560
+Color: 255 8 0
+
+hammer_9
+1
+ 606  625
+Color: 255 9 0
+
+Feedback
+10
+  61   65
+ 126  130
+ 191  195
+ 256  260
+ 321  325
+ 386  390
+ 451  455
+ 516  520
+ 581  585
+ 646  650
+Color: 0 255 0
