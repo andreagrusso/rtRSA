@@ -74,7 +74,7 @@ def create_baseline_figure(rtRSAObj, image):
         ax.annotate(label, xy=(x, y), xytext=(-20, 20),size=15,
                      textcoords='offset points', ha='right', va='bottom',
                      bbox=dict(boxstyle='round,pad=0.5', fc='yellow', alpha=1),
-                     arrowprops=dict(arrowstyle = '->', connectionstyle='arc3,rad=0')) 
+                     arrowprops=dict(arrowstyle = '->', connectionstyle='arc3,rad=0'), zorder=1) 
     
     
     yellow_circle = mlines.Line2D([], [], color='yellow',  linestyle='None', 
@@ -138,9 +138,9 @@ def create_feedback(scat,ax,idx_fb,stimulus_positions,img,win):
         #plot the new position of the current mental state and, in dashed lines,
         #the trajectory until now        
         new_scat = ax.scatter(stimulus_positions[idx_fb,0],stimulus_positions[idx_fb,1], 
-                    marker = '*',s=200, color = 'red', edgecolors='black')
+                    marker = '*',s=200, color = 'red', edgecolors='black',zorder=3)
         ax.plot(stimulus_positions[:idx_fb+1,0],stimulus_positions[:idx_fb+1,1], '--',
-                        color = 'black',alpha=0.2)
+                        color = 'black',alpha=0.2,zorder=1)
 
     ax.set_facecolor('dimgray')
     plt.xticks([])
