@@ -23,8 +23,8 @@ settings = dict()
 #%%############################################################################
 
 #first block limits
-baseline_duration = 20
-task_duration = 40
+baseline_duration = 30
+task_duration = 30
 
 
 block_duration = baseline_duration + task_duration
