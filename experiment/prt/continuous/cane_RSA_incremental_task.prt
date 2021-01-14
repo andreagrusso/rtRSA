@@ -3,7 +3,7 @@ FileVersion:        2
 
 ResolutionOfTime:   Volumes
 
-Experiment:         RSA Pilot 1st run apple
+Experiment:         rtRSA cane
 
 BackgroundColor:    0 0 0
 TextColor:          255 255 255
@@ -12,7 +12,7 @@ TimeCourseThick:    3
 ReferenceFuncColor: 0 0 80
 ReferenceFuncThick: 3
 
-NrOfConditions:  2
+NrOfConditions:     2
 
 Baseline
 11
@@ -27,9 +27,9 @@ Baseline
  321  340
  361  380
  401  420
-Color: 182 182 182
+Color: 0 0 255
 
-hammer
+Task
 10
   21   40
   61   80

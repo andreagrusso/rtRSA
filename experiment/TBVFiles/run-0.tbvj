@@ -5,7 +5,7 @@
         "DicomFirstVolumeNr": 20,
         "DicomNameDelimiter": "_",
         "DicomNameExtension": "dcm",
-        "FirstFileName": "001_000012_000001.dcm",
+        "FirstFileName": "001_000006_000001.dcm",
         "FlipSliceOrderFuncData": true,
         "GapThickness": 0,
         "InplaneFoVX": 288,
@@ -22,7 +22,7 @@
     "FoldersInfo": {
         "FeedbackTargetFolder": "./TargetFolder/run_0_cat/",
         "TargetFolder": "./TargetFolder/run_0_cat/",
-        "WatchFolder": "C:/rtExport/20201222.Ciarlo_Assunta.20.12.22_11_38_21_STDrtRSA/"
+        "WatchFolder": "C:/rtExport/"
     },
     "ForceTRDelay": false,
     "InplaneOverlayInfo": {
