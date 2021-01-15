@@ -47,22 +47,34 @@ nf_coords = TBV.get_all_coords_of_voxels_of_roi(0)[0]
 
 n_ctr = TBV.get_nr_of_contrasts()[0]
 
-#tvalues_ml = np.empty((len(nf_coords),9))
-tvalues_agr = np.empty((len(nf_coords),9))
+tvalues_ml = np.empty((len(nf_coords),9))
+#tvalues_agr = np.empty((len(nf_coords),9))
 
 for ctr in range(9):
-    tvalues_agr[:,ctr]= np.array([TBV.get_map_value_of_voxel(ctr,coords)[0] 
+    tvalues_ml[:,ctr]= np.array([TBV.get_map_value_of_voxel(ctr,coords)[0] 
                 for coords in nf_coords])
 
 #%%
 
-pickle.dump(tvalues_agr,open(os.getcwd()+'/normal_prt.pkl','wb'))
+#pickle.dump(tvalues_agr,open(os.getcwd()+'/normal_prt.pkl','wb'))
 pickle.dump(tvalues_ml,open(os.getcwd()+'/not_normal_prt.pkl','wb'))
 
 #%%
 
-tval_diff = (np.array(tvalues_ml)-np.array(tvalues_agr))*100/np.array(tvalues_agr)
+tval_diff = (abs(tvalues_ml)-abs(tvalues_agr))/abs(tvalues_agr)#+np.array(tvalues_agr))
+labels = ['pred1','pred2','pred3','pred4','pred5','pred6','pred6','pred7','pred8','pred9']
 
-plt.plot(tval_diff[:,0])
+signs = np.sign(tvalues_agr)*np.sign(tvalues_ml)
 
-a=np.corrcoef(tvalues_agr,tvalues_ml, rowvar=False)
+plt.plot(tval_diff*signs*100)
+plt.legend(labels,fontsize=20)
+plt.xticks(fontsize=30)
+plt.yticks(fontsize=30) 
+plt.tight_layout()
+
+
+from scipy.stats import pearsonr
+
+corr = []
+for i in range(tval_diff.shape[1]): 
+    corr.append(pearsonr(tvalues_agr[:,i],tvalues_ml[:,i]))

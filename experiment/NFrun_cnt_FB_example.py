@@ -177,7 +177,7 @@ rtRSAObj = nfrsa.rtRSA('mician_itc',2,'euclidean')
 #load properties in the just created rtRSAObj
 #the config.json file can be created by using one of the class method
 #the file si wirtten after the estimation of the RS
-rtRSAObj.load(os.path.join(wdir,'mician_itc.json'))
+rtRSAObj.load(os.path.join(wdir,'12Gen20_mician.json'))
 print('rtRSA ready!\n')
 print('Nr of voxels: ',+ len(rtRSAObj.func_coords))
 print('Base stimuli name:')
