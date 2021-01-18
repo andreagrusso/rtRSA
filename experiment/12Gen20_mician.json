@@ -1,0 +1,11 @@
+{
+    "metric": 1,
+    "n_comp": 2,
+    "name": "12Gen20_mician",
+    "rdm": "D:/rt_neurofeedback/12Gen21/offline_testing/merged_tmaps\\12Gen20_mician\\12Gen20_mician.rdm",
+    "base_stimuli": "D:/rt_neurofeedback/12Gen21/offline_testing/merged_tmaps\\12Gen20_mician\\12Gen20_mician.tvals",
+    "rs_coords": "D:/rt_neurofeedback/12Gen21/offline_testing/merged_tmaps\\12Gen20_mician\\12Gen20_mician.rsc",
+    "inv_mat": "D:/rt_neurofeedback/12Gen21/offline_testing/merged_tmaps\\12Gen20_mician\\12Gen20_mician.mat",
+    "func_coords": "D:/rt_neurofeedback/12Gen21/offline_testing/merged_tmaps\\12Gen20_mician\\12Gen20_mician.fnc",
+    "conditions": "D:/rt_neurofeedback/12Gen21/offline_testing/merged_tmaps\\12Gen20_mician\\12Gen20_mician.cnd"
+}

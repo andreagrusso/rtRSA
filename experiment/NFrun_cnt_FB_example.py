@@ -14,8 +14,9 @@ The experimental framework is built using PsychoPy3, although the rtRSA can
 be used with any other stimulation packages. It is a block design with an 
 imagery task. An auditory cue is delivered to the subject that is requested
 to imagine the corresponding object until a stop cue is delivered. The brain 
-data are extracted every 60 seconds (2 baseline,1 task) and provided as visual 
-feedback to the subject for 5 seconds. An identical approach has been used for
+data are extracted every 2 seconds starting from the beggining of the task block. 
+The feedback is displayed continuously during the task block. 
+An identical approach has been used for
 the localizer sessions whose data are used to generate the baseline stimuli
 and all the files needed for the NF run.
 
@@ -346,6 +347,13 @@ while TBV.get_current_time_point()[0] <= NrOfTimePoints+1:
             if CurrTimePoint in tasks[:,0]:
                 print('stimulus')
                 stimulus.play()
+                
+                if idx_fb >=1:
+                    print(idx_fb)
+                    image.setImage(os.path.join(outdir,'tvals_Trial' + str(idx_fb-1)+ '.png'))
+                    image.draw()
+                    win.flip()                    
+                    
                                     
             elif CurrTimePoint in baselines[:,0]:
                 stop_stim.play()
