@@ -45,7 +45,7 @@ baselines = np.vstack((baselines,baselines[-1,:]+block_duration))
 
 
 
-feedbacks = np.array([np.arange(tasks[i,0]+7,tasks[i,1],2)
+feedbacks = np.array([np.arange(tasks[i,0]+5,tasks[i,1],2)
                          for i in range(len(tasks))]).reshape(-1,1)
 
 #%%############################################################################
