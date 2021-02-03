@@ -1,0 +1,58 @@
+
+FileVersion:        2
+
+ResolutionOfTime:   Volumes
+
+Experiment:         rtRSA martello
+
+BackgroundColor:    0 0 0
+TextColor:          255 255 255
+TimeCourseColor:    255 255 255
+TimeCourseThick:    3
+ReferenceFuncColor: 0 0 80
+ReferenceFuncThick: 3
+
+NrOfConditions:     3
+
+Baseline
+11
+   1   20
+  45   64
+  89  108
+ 133  152
+ 177  196
+ 221  240
+ 265  284
+ 309  328
+ 353  372
+ 397  416
+ 441  460
+Color: 0 0 255
+
+Task
+10
+  21   40
+  65   84
+ 109  128
+ 153  172
+ 197  216
+ 241  260
+ 285  304
+ 329  348
+ 373  392
+ 417  436
+Color: 255 0 0
+
+Feedbacks
+10
+  41   44
+  85   88
+ 129  132
+ 173  176
+ 217  220
+ 261  264
+ 305  308
+ 349  352
+ 393  396
+ 437  440
+Color: 0 255 0
