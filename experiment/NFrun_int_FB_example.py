@@ -86,7 +86,7 @@ def create_baseline_figure(rtRSAObj, image):
     ax.legend(handles=[yellow_circle, red_star],loc='upper center', bbox_to_anchor=(0.5, -0.05),ncol=4)
     
     
-    plt.savefig(os.path.join(outdir,'initial_img.png'), dpi=200,facecolor='dimgray')  
+    plt.savefig(os.path.join(outdir,'initial_img.png'), dpi=200,facecolor='dimgray', bbox_inches='tight')  
     
     # put it in an ImageStim
     image.setImage(os.path.join(outdir,'initial_img.png'))
@@ -148,7 +148,7 @@ def create_feedback(scat,ax,idx_fb,stimulus_positions,img,win):
             
     #save figure
     plt.savefig(os.path.join(outdir,'tvals_Trial' + str(idx_fb)+ '.png'),
-               facecolor='dimgray', edgecolor='none', dpi=200)
+               facecolor='dimgray', edgecolor='none', dpi=200, bbox_inches='tight')
     
     #load and display the saved figure
     image.setImage(os.path.join(outdir,'tvals_Trial' + str(idx_fb)+ '.png'))
