@@ -14,9 +14,8 @@ The experimental framework is built using PsychoPy3, although the rtRSA can
 be used with any other stimulation packages. It is a block design with an 
 imagery task. An auditory cue is delivered to the subject that is requested
 to imagine the corresponding object until a stop cue is delivered. The brain 
-data are extracted every 2 seconds starting from the beggining of the task block. 
-The feedback is displayed continuously during the task block. 
-An identical approach has been used for
+data are extracted intermittently every 40 seconds (1 rest block, 1 task block) 
+An similar approach has been used for
 the localizer sessions whose data are used to generate the baseline stimuli
 and all the files needed for the NF run.
 
@@ -272,9 +271,9 @@ if not os.path.exists(outdir):
     os.makedirs(outdir)
 
 #condition timings
-baselines = pickle.load(open(os.path.join(wdir,'prt/continuous/baselines.pkl'),'rb'))
-tasks = pickle.load(open(os.path.join(wdir,'prt/continuous/tasks.pkl'),'rb'))
-feedbacks = pickle.load(open(os.path.join(wdir,'prt/continuous/feedbacks.pkl'),'rb'))
+baselines = pickle.load(open(os.path.join(wdir,'prt/intermittent/baselines.pkl'),'rb'))
+tasks = pickle.load(open(os.path.join(wdir,'prt/intermittent/tasks.pkl'),'rb'))
+feedbacks = pickle.load(open(os.path.join(wdir,'prt/intermittent/feedbacks.pkl'),'rb'))
 
 nr_of_trials = feedbacks.shape[0]
 
@@ -297,7 +296,7 @@ print('Baseline figure created!')
 
 
 real_run = input('Is it a real NF run? (y/n): ')
-
+print('gg')
 if  real_run == 'y':
     
     #These lines hold true only for a scanner with a trigger on a serial port!!
@@ -314,7 +313,7 @@ else:
     while '5' not in event.getKeys(['5']):
         print('Waiting scanner....')
 
-
+#%% 
 
 
 globalClock.reset()    
@@ -361,26 +360,23 @@ while TBV.get_current_time_point()[0] <= NrOfTimePoints+1:
             #     fixation.draw()
             #     win.flip()
                
-            #showing only the frame for the imaginative task
+            #Imagination
             if CurrTimePoint in tasks[:,0]:
                 print('stimulus')
                 stimulus.play()
-                
-                if idx_fb >=1:
-                    print(idx_fb)
-                    image.setImage(os.path.join(outdir,'tvals_Trial' + str(idx_fb-1)+ '.png'))
-                    image.draw()
-                    win.flip()                    
+                fixation.draw()
+                win.flip()
+                              
                     
-                                    
-            elif CurrTimePoint in baselines[:,0]:
+            #Rest                        
+            elif CurrTimePoint in baselines[1:,0]:
                 stop_stim.play()
                 print('stop')
                 fixation.draw()
                 win.flip()
                 
             #extract the map and plot the current position
-            elif CurrTimePoint in feedbacks:
+            elif CurrTimePoint in feedbacks[:,0]:
                 
                 #extracting tvalues from the ROI
                 #in this experimental paradigm we have only one contrast
@@ -398,8 +394,10 @@ while TBV.get_current_time_point()[0] <= NrOfTimePoints+1:
               
                 #increment the index of the contrast map
                 idx_fb += 1
-                
+            
+            #pattern of the full time-series GLM
             elif CurrTimePoint == NrOfTimePoints:
+                
                 #contrast number is fixed for the simulation
                 #extract tvalues at the corresponding coordinates
                 tvalues = [TBV.get_map_value_of_voxel(idx_ctr,coords)[0] 
