@@ -299,6 +299,10 @@ print('Baseline figure created!')
 real_run = input('Is it a real NF run? (y/n): ')
 
 if  real_run == 'y':
+    
+    #These lines hold true only for a scanner with a trigger on a serial port!!
+    #Please check your scan before use it!!!
+    print('N.B. This works only for a scanner with a trigger based on serial port!!!')
     serFmri = serial.Serial('COM1', 57600)
     prevState = serFmri.getDSR()
 
