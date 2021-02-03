@@ -279,6 +279,7 @@ nr_of_trials = feedbacks.shape[0]
 
 #variable to store positions of the stimulus in time
 stimulus_positions = np.empty((nr_of_trials+1,2))
+feedback_distances = []
 
 #index of the feedbacks
 idx_fb = 0
@@ -356,27 +357,34 @@ while TBV.get_current_time_point()[0] <= NrOfTimePoints+1:
                 nf_coords = rtRSAObj.match_coords(np.array(raw_nf_coords))
                 
             #needed to avoid accessing to timepoint -1 (fake) or timepoint 0
-            # while CurrTimePoint < baselines[0,0] :
-            #     fixation.draw()
-            #     win.flip()
-               
+            if CurrTimePoint in range(0,baselines[0,1]) :
+                fixation.draw()
+                win.flip()
+            
+            
             #Imagination
-            if CurrTimePoint in tasks[:,0]:
+            elif CurrTimePoint in tasks[:,0]:
                 print('stimulus')
                 stimulus.play()
                 fixation.draw()
                 win.flip()
                               
                     
+            # #Stop imagination                        
+            # elif CurrTimePoint in tasks[:,1]:
+            #     stop_stim.play()
+            #     print('stop')
+
+                
             #Rest                        
             elif CurrTimePoint in baselines[1:,0]:
-                stop_stim.play()
-                print('stop')
                 fixation.draw()
                 win.flip()
                 
             #extract the map and plot the current position
             elif CurrTimePoint in feedbacks[:,0]:
+                stop_stim.play()
+                print('stop')
                 
                 #extracting tvalues from the ROI
                 #in this experimental paradigm we have only one contrast
@@ -384,7 +392,8 @@ while TBV.get_current_time_point()[0] <= NrOfTimePoints+1:
                                 for coords in nf_coords]
 
                 #estimate nwe stimulus coordinates
-                stimulus_positions[idx_fb,:] = rtRSAObj.target_positioning(tvalues)
+                stimulus_positions[idx_fb,0],stimulus_positions[idx_fb,1],tmp_dist = rtRSAObj.target_positioning(tvalues)
+                feedback_distances.append(tmp_dist)
                 
                 #create the feedback
                 if idx_fb == 0:
@@ -404,8 +413,9 @@ while TBV.get_current_time_point()[0] <= NrOfTimePoints+1:
                            for coords in nf_coords]
                 #print(tvalues)
                 #estimate new stimulus coordinates
-                stimulus_positions[idx_fb,:] = rtRSAObj.target_positioning(tvalues)
-                
+                stimulus_positions[idx_fb,0],stimulus_positions[idx_fb,0],tmp_dist = rtRSAObj.target_positioning(tvalues)
+                feedback_distances.append(tmp_dist)
+
                 #create the feedback
                 new_scat = create_feedback(new_scat,ax,idx_fb,stimulus_positions,image,win)
                 
@@ -427,6 +437,7 @@ with open(os.path.join(outdir,'timepoint_timing_incrementalGLM.txt'), 'w') as f:
 f.close()            
 
 pickle.dump(stimulus_positions,open(os.path.join(outdir,'feedback_positions.pkl'),'wb'))
+pickle.dump(feedback_distances,open(os.path.join(outdir,'feedback_distances.pkl'),'wb'))
 
 
 win.close()
