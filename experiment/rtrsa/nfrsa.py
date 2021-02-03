@@ -476,7 +476,7 @@ class rtRSA:
         #compute the actual coords in the embedding space 
         coords = -0.5*(self.RS_inv_mat).dot((sq_dist - rdm_mean).T)
     
-        return coords[0],coords[1]          
+        return coords[0],coords[1],distances          
 
 
 
