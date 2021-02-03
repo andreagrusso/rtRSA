@@ -195,7 +195,7 @@ print(rtRSAObj.conditions)
 #create an instance to access TBV via network plugin
 TBV = tbvnetworkinterface.TbvNetworkInterface('localhost',55555)
 
-win = visual.Window(fullscr=True,color='gray',screen=1,
+win = visual.Window(fullscr=False,color='gray',screen=0,
                     size=(1024,768),colorSpace='rgb255') 
 
 #creation of the cue for the image
@@ -248,11 +248,13 @@ fixation = visual.TextStim(win,
 #clock initialization
 globalClock = core.Clock()
 
+
+
 #%%############################################################################
 #                      THESE VARIABLES DEPEND ON                             #
 #                      THE EXPERIMENTAL DESIGN                               #
 ###############################################################################
-audio_stim_name = input('Insert the filename of the audio stimulus:'  )
+audio_stim_name = input('Insert the filename of the audio stimulus: '  )
 nr_NF_session = input('Number of the NF session (1,2,3...): ')
 
 #path of the stimulus
@@ -264,7 +266,8 @@ stop_stim = Sound(stop_wav)
 
 
 #create a new output directory for the FB images
-outdir = os.path.join(os.path.abspath(os.path.join(sub_json_file,os.pardir)),audio_stim_name + '_' + str(nr_NF_session))
+outdir = os.path.join(os.path.abspath(os.path.join(sub_json_file,os.pardir)),
+                      audio_stim_name + '_output_' + str(nr_NF_session))
 if not os.path.exists(outdir):
     os.makedirs(outdir)
 
@@ -293,18 +296,22 @@ scat, ax = create_baseline_figure(rtRSAObj,image)
 print('Baseline figure created!')
 
 
+real_run = input('Is it a real NF run? (y/n): ')
 
+if  real_run == 'y':
+    serFmri = serial.Serial('COM1', 57600)
+    prevState = serFmri.getDSR()
+
+    while serFmri.getDSR() == prevState:
+        print('Waiting scanner....')
+
+else:
 #USEFUl FOR OTHER SCANNERS AND SIMULATIONS
-# while '5' not in event.getKeys(['5']):
-#     print('Waiting scanner....')
+    while '5' not in event.getKeys(['5']):
+        print('Waiting scanner....')
 
 
-serFmri = serial.Serial('COM1', 57600)
-prevState = serFmri.getDSR()
 
-while serFmri.getDSR() == prevState:
-    print('Waiting scanner....')
-   
 
 globalClock.reset()    
 print("First trigger!")
