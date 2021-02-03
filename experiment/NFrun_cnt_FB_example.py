@@ -27,17 +27,16 @@ of the rtRSA.
 
 """
 from psychopy import core, visual, event
-import os,sys, pickle
+import os, pickle, serial
 import numpy as np
 from expyriment_stash.extras.expyriment_io_extras import tbvnetworkinterface
+from tkinter import filedialog
 #import matplotlib
 #matplotlib.use('Agg') #to avoid display of the plot
 from matplotlib import pyplot as plt
 import matplotlib.lines as mlines
 from psychopy.sound import Sound
-from rtrsa import nfrsa
-
- 
+from rtrsa import nfrsa 
 
 #%%############################################################################
 #                                 FUNCTIONS                                   #
@@ -163,8 +162,6 @@ def create_feedback(scat,ax,idx_fb,stimulus_positions,img,win):
 
 
 
-
-
 #%%###########################################################################
 #                           Create an rtRSA object                           #
 ##############################################################################
@@ -173,12 +170,17 @@ def create_feedback(scat,ax,idx_fb,stimulus_positions,img,win):
 #get current directory
 wdir = os.getcwd()
 
-rtRSAObj = nfrsa.rtRSA('mician_itc',2,'euclidean')
+#get the directory where there are the RSA data of the subject
+sub_json_file = filedialog.askopenfilename(title='Select the config json file of the subject')
+
+#empty RSA object
+rtRSAObj = nfrsa.rtRSA(' ',2,' ')
 
 #load properties in the just created rtRSAObj
 #the config.json file can be created by using one of the class method
 #the file si wirtten after the estimation of the RS
-rtRSAObj.load(os.path.join(wdir,'12Gen20_mician.json'))
+rtRSAObj.load(sub_json_file)
+
 print('rtRSA ready!\n')
 print('Nr of voxels: ',+ len(rtRSAObj.func_coords))
 print('Base stimuli name:')
@@ -193,7 +195,7 @@ print(rtRSAObj.conditions)
 #create an instance to access TBV via network plugin
 TBV = tbvnetworkinterface.TbvNetworkInterface('localhost',55555)
 
-win = visual.Window(fullscr=False,color='gray',screen=0,
+win = visual.Window(fullscr=True,color='gray',screen=1,
                     size=(1024,768),colorSpace='rgb255') 
 
 #creation of the cue for the image
@@ -251,15 +253,20 @@ globalClock = core.Clock()
 #                      THE EXPERIMENTAL DESIGN                               #
 ###############################################################################
 audio_stim_name = input('Insert the filename of the audio stimulus:'  )
+nr_NF_session = input('Number of the NF session (1,2,3...): ')
 
 #path of the stimulus
 stimulus_path = os.path.join(wdir,'sounds/stimuli/'+audio_stim_name +'.wav')
 stimulus = Sound(stimulus_path)
-
+#path of the stop audio file
 stop_wav= os.path.join(wdir,'sounds/stop.wav')
 stop_stim = Sound(stop_wav)
 
-outdir = os.path.join(wdir,'output')
+
+#create a new output directory for the FB images
+outdir = os.path.join(os.path.abspath(os.path.join(sub_json_file,os.pardir)),audio_stim_name + '_' + str(nr_NF_session))
+if not os.path.exists(outdir):
+    os.makedirs(outdir)
 
 #condition timings
 baselines = pickle.load(open(os.path.join(wdir,'prt/continuous/baselines.pkl'),'rb'))
@@ -288,15 +295,15 @@ print('Baseline figure created!')
 
 
 #USEFUl FOR OTHER SCANNERS AND SIMULATIONS
-while '5' not in event.getKeys(['5']):
+# while '5' not in event.getKeys(['5']):
+#     print('Waiting scanner....')
+
+
+serFmri = serial.Serial('COM1', 57600)
+prevState = serFmri.getDSR()
+
+while serFmri.getDSR() == prevState:
     print('Waiting scanner....')
-
-
-#serFmri = serial.Serial('COM1', 57600)
-#prevState = serFmri.getDSR()
-
-#while serFmri.getDSR() == prevState:
-#    print('Waiting scanner....')
    
 
 globalClock.reset()    
