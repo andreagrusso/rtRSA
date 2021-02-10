@@ -125,3 +125,4 @@ dmypy.json
 .pyre/
 *.png
 test_expyriment_paradigm.py
+testing/noise/simulated_stimuli_sigma_0.5.pkl
