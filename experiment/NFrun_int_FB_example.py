@@ -26,7 +26,7 @@ of the rtRSA.
 
 """
 from psychopy import core, visual, event
-import os, pickle, serial
+import os, pickle, serial, sys
 import numpy as np
 from expyriment_stash.extras.expyriment_io_extras import tbvnetworkinterface
 from tkinter import filedialog
@@ -297,8 +297,6 @@ scat, ax = create_baseline_figure(rtRSAObj,image)
 print('Baseline figure created!')
 
 
-# real_run = input('Is it a real NF run? (y/n): ')
-# print('gg')
 real_run = 'n'
 if  real_run == 'y':
     
@@ -371,12 +369,6 @@ while TBV.get_current_time_point()[0] <= NrOfTimePoints+1:
                 fixation.draw()
                 win.flip()
                               
-                    
-            # #Stop imagination                        
-            # elif CurrTimePoint in tasks[:,1]:
-            #     stop_stim.play()
-            #     print('stop')
-
                 
             #Rest                        
             elif CurrTimePoint in baselines[1:,0]:
@@ -438,8 +430,7 @@ while TBV.get_current_time_point()[0] <= NrOfTimePoints+1:
                 win.close()
                        
                 print('Bye! See you soon!')
-                os.close()
-
+                sys.exit()
                     
               
 
