@@ -27,7 +27,7 @@ of the rtRSA.
 
 """
 from psychopy import core, visual, event
-import os, pickle, serial
+import os, pickle, serial, sys
 import numpy as np
 from expyriment_stash.extras.expyriment_io_extras import tbvnetworkinterface
 from tkinter import filedialog
@@ -280,7 +280,8 @@ nr_of_trials = feedbacks.shape[0]
 
 #variable to store positions of the stimulus in time
 stimulus_positions = np.empty((nr_of_trials+1,2))
-
+feedback_distances = []
+all_tvalues = []
 #index of the feedbacks
 idx_fb = 0
 
@@ -296,7 +297,7 @@ scat, ax = create_baseline_figure(rtRSAObj,image)
 print('Baseline figure created!')
 
 
-real_run = input('Is it a real NF run? (y/n): ')
+real_run = 'n'
 
 if  real_run == 'y':
     
@@ -388,7 +389,7 @@ while TBV.get_current_time_point()[0] <= NrOfTimePoints+1:
                                 for coords in nf_coords]
 
                 #estimate nwe stimulus coordinates
-                stimulus_positions[idx_fb,:] = rtRSAObj.target_positioning(tvalues)
+                stimulus_positions[idx_fb,0],stimulus_positions[idx_fb,1],tmp_dist = rtRSAObj.target_positioning(tvalues)
                 
                 #create the feedback
                 if idx_fb == 0:
@@ -400,39 +401,35 @@ while TBV.get_current_time_point()[0] <= NrOfTimePoints+1:
                 idx_fb += 1
                 
             elif CurrTimePoint == NrOfTimePoints:
+                os.system('pause')
                 #contrast number is fixed for the simulation
                 #extract tvalues at the corresponding coordinates
                 tvalues = [TBV.get_map_value_of_voxel(idx_ctr,coords)[0] 
                            for coords in nf_coords]
                 #print(tvalues)
                 #estimate new stimulus coordinates
-                stimulus_positions[idx_fb,:] = rtRSAObj.target_positioning(tvalues)
-                
+                stimulus_positions[idx_fb,0],stimulus_positions[idx_fb,1],tmp_dist = rtRSAObj.target_positioning(tvalues)
+                feedback_distances.append(tmp_dist)
+                all_tvalues.append(tvalues)
                 #create the feedback
                 new_scat = create_feedback(new_scat,ax,idx_fb,stimulus_positions,image,win)
                 
                 print('Last time point!')
-
-                break
-
+    
+                with open(os.path.join(outdir,'timepoint_timing_incrementalGLM.txt'), 'w') as f:
+                    for item in timepoint_timing:
+                        f.write("%s\n" % item) 
+                f.close()            
+                
+                pickle.dump(stimulus_positions,open(os.path.join(outdir,'feedback_positions.pkl'),'wb'))
+                pickle.dump(feedback_distances,open(os.path.join(outdir,'feedback_distances.pkl'),'wb'))
+                pickle.dump(all_tvalues,open(os.path.join(outdir,'all_tvalues.pkl'),'wb'))
+                
+                
+                win.close()
                        
-
-                    
-              
-#plt.close()
-
-
-
-with open(os.path.join(outdir,'timepoint_timing_incrementalGLM.txt'), 'w') as f:
-    for item in timepoint_timing:
-        f.write("%s\n" % item) 
-f.close()            
-
-pickle.dump(stimulus_positions,open(os.path.join(outdir,'feedback_positions.pkl'),'wb'))
-
-
-win.close()
-
+                print('Bye! See you soon!')
+                sys.exit()
 
 
     
