@@ -517,6 +517,12 @@ class rtRSA:
         #if the the NF-ROI is bigger we need to remove voxels  
         if (delta > 0):
             
+            print('THE CURRENT ROI IS BIGGER THAN THE ROI USED FOR THE RS!\n')
+            print('THIS FUNCTION IS NOT FULLY TESTED!\n')
+            print('STATISTICS COULD BE UNRELIABLE!\n')
+            
+            
+            
             sort_idx = np.argsort(d_trg,axis=0)
             coords2del = sort_idx[-delta-1:-1]
             nf_coords = np.delete(curr_coords,coords2del,axis=0)
@@ -527,6 +533,10 @@ class rtRSA:
         
         #if the NF-ROI is smaller we need to add voxels    
         elif (delta < 0):
+            
+            print('THE CURRENT ROI IS SMALLER THAN THE ROI USED FOR THE RS!\n')
+            print('THIS FUNCTION IS NOT FULLY TESTED!\n')
+            print('STATISTICS COULD BE UNRELIABLE!\n')
             
             #find the min and the max of the coordinates over the coordinates
             bbox_edges = np.array([np.min(curr_coords,axis=0),
