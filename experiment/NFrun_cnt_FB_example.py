@@ -355,7 +355,10 @@ while TBV.get_current_time_point()[0] <= NrOfTimePoints+1:
                 
                 #matching the current FMR coords with the ones of the localizer
                 raw_nf_coords = TBV.get_all_coords_of_voxels_of_roi(0)[0]                    
+                raw_nf_coords = raw_nf_coords[np.lexsort((raw_nf_coords[:,2], raw_nf_coords[:,1],raw_nf_coords[:,0]))]                    
                 nf_coords = rtRSAObj.match_coords(np.array(raw_nf_coords))
+                print(nf_coords)
+                
                 
             #needed to avoid accessing to timepoint -1 (fake) or timepoint 0
             # while CurrTimePoint < baselines[0,0] :
@@ -390,6 +393,7 @@ while TBV.get_current_time_point()[0] <= NrOfTimePoints+1:
 
                 #estimate nwe stimulus coordinates
                 stimulus_positions[idx_fb,0],stimulus_positions[idx_fb,1],tmp_dist = rtRSAObj.target_positioning(tvalues)
+                all_tvalues.append(tvalues)
                 
                 #create the feedback
                 if idx_fb == 0:
