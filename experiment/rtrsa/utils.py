@@ -177,21 +177,24 @@ def merge_tmaps(name,dist_metric,n_comp,inputdir,outdir,basename):
     
     #set of commmon cooordinates
     cc = intersect_coords(raw_tvals)
+    #sort by 3rd column, 2nd column, 1st column
+    sorted_cc = cc[np.lexsort((cc[:,2], cc[:,1],cc[:,0]))]
     
     #storing the common coords (functional space) in the rtRSA object
-    rtRSAObj.load_func_coords(cc)
+    rtRSAObj.load_func_coords(sorted_cc)
     
     
     tvals_mat = np.empty((len(cc),len(raw_tvals)))
-    
+
     #use this common set of coordinates to extract the tvalues
     for i,data in enumerate(raw_tvals):
         
         #get the indices of the common coords
-        indices = npi.contains(cc,data[:,:-1])
-        #get the tvalues corresponding to the common coords
-        tvals_mat[:,i] = data[indices,-1]
-    
+        for j,coord in enumerate(data[:,:-1]):
+            index = np.where((sorted_cc == coord).all(axis=1))[0]
+            #get the tvalues corresponding to the common coords
+            tvals_mat[index,i] = data[j,-1]
+            
     
     tvals['ROI'] = tvals_mat 
     
