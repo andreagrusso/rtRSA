@@ -354,7 +354,7 @@ while TBV.get_current_time_point()[0] <= NrOfTimePoints+1:
             if not raw_nf_coords:
                 
                 #matching the current FMR coords with the ones of the localizer
-                raw_nf_coords = TBV.get_all_coords_of_voxels_of_roi(0)[0]                    
+                raw_nf_coords = np.array(TBV.get_all_coords_of_voxels_of_roi(0)[0])                    
                 raw_nf_coords = raw_nf_coords[np.lexsort((raw_nf_coords[:,2], raw_nf_coords[:,1],raw_nf_coords[:,0]))]                    
                 nf_coords = rtRSAObj.match_coords(np.array(raw_nf_coords))
                 print(nf_coords)
