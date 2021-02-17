@@ -330,7 +330,8 @@ while TBV.get_current_time_point()[0] < 1:
     NrOfROIs = TBV.get_nr_of_rois()[0]
     print('Waiting TBV....')
 
-raw_nf_coords = []
+#boolean flag. It is True only if we have the coordinates of the ROI
+tbv_coords_ok = False 
 
 print("OK let's go! Expected TPs: " + str(NrOfTimePoints))    
 #general loop
@@ -351,13 +352,13 @@ while TBV.get_current_time_point()[0] <= NrOfTimePoints+1:
                        
         else:
             
-            if not raw_nf_coords:
+            if not tbv_coords_ok:
                 
                 #matching the current FMR coords with the ones of the localizer
-                raw_nf_coords = np.array(TBV.get_all_coords_of_voxels_of_roi(0)[0])                    
+                raw_nf_coords = np.array(TBV.get_all_coords_of_voxels_of_roi(0)[0])
                 raw_nf_coords = raw_nf_coords[np.lexsort((raw_nf_coords[:,2], raw_nf_coords[:,1],raw_nf_coords[:,0]))]                    
                 nf_coords = rtRSAObj.match_coords(np.array(raw_nf_coords))
-                print(nf_coords)
+                tbv_coords_ok = True
                 
                 
             #needed to avoid accessing to timepoint -1 (fake) or timepoint 0
