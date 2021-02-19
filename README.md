@@ -1,7 +1,7 @@
 # rtRSA
 A Python implementation of a real-time Representational Similarity Analysis for fMRI Neurofeedback experiment using Turbo-BrainVoyager.
 
-If you use this tool please cite: (in update...)
+If you use this tool please cite: (https://www.biorxiv.org/content/10.1101/2020.11.09.374397v2 in update...)
 
 # How to use rt-SA 
 
@@ -21,12 +21,12 @@ Examples of possible Python scripts to run a rt-fMRI-NF experiment with the rt-R
 N.B. All examples are based on Turbo-BrainVoyager and its network plugin (https://www.brainvoyager.com/downloads/install_turbobrainvoyager.html) 
 
 # Python packages needed
-numpy_indexed
-expyriment
-expyriment-stash
-numpy
-scipy
-scikit-learn
+numpy_indexed; 
+expyriment;
+expyriment-stash;
+numpy;
+scipy; 
+scikit-learn;
 PsychoPy3 (to use the example experiments)
 
 
