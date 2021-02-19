@@ -129,3 +129,4 @@ testing/noise/simulated_stimuli_sigma_0.5.pkl
 testing/noise/simulated_stimuli_sigma_1.pkl
 testing/noise/simulated_stimuli_sigma_2.pkl
 testing/noise/simulated_stimuli_sigma_3.pkl
+experiment/test_ccords.py
