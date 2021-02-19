@@ -1,0 +1,67 @@
+
+FileVersion:        2
+
+ResolutionOfTime:   Volumes
+
+Experiment:         rtRSA sedia
+
+BackgroundColor:    0 0 0
+TextColor:          255 255 255
+TimeCourseColor:    255 255 255
+TimeCourseThick:    3
+ReferenceFuncColor: 0 0 80
+ReferenceFuncThick: 3
+
+NrOfConditions:     3
+
+Baseline
+20
+   5   24
+  45   64
+  69   88
+ 109  128
+ 133  152
+ 173  192
+ 197  216
+ 237  256
+ 261  280
+ 301  320
+ 325  344
+ 365  384
+ 389  408
+ 429  448
+ 453  472
+ 493  512
+ 517  536
+ 557  576
+ 581  600
+ 621  640
+Color: 0 0 255
+
+Task
+10
+  25   44
+  89  108
+ 153  172
+ 217  236
+ 281  300
+ 345  364
+ 409  428
+ 473  492
+ 537  556
+ 601  620
+Color: 255 0 0
+
+Feedbacks
+10
+   1    4
+  65   68
+ 129  132
+ 193  196
+ 257  260
+ 321  324
+ 385  388
+ 449  452
+ 513  516
+ 577  580
+Color: 0 255 0
