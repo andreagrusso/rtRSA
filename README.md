@@ -12,10 +12,11 @@ If you use this tool please cite: (in update...)
 # Examples
 Examples of possible Python scripts to run a rt-fMRI-NF experiment with the rt-RSA and different paradigm (i.e. continuous and intermeittent) are the following files:
   
-  1) NFrun_7T_paradigm_example.py
-  2) NFrun_cnt_FB_example.py
-  3) NFrun_int_FB_example.py
-  4) NFrun_long_int_FB_example.py
+
+  1) NFrun_int_FB_example.py  (feedback display after the task block)
+  2) NFrun_long_int_FB_example.py (feedback display after the baseline block)
+  3) NFrun_7T_paradigm_example.py (similar to nr. 2)
+  4) NFrun_cnt_FB_example.py (feedback updates every 2s during the task block)
  
 N.B. All examples are based on Turbo-BrainVoyager and its network plugin (https://www.brainvoyager.com/downloads/install_turbobrainvoyager.html) 
 
