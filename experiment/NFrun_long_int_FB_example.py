@@ -67,6 +67,9 @@ def create_baseline_figure(rtRSAObj, image):
     fig.set_facecolor('dimgray')
     scat = ax.scatter(rtRSAObj.RS_coords[:,0],rtRSAObj.RS_coords[:,1],s=150, c='yellow',
                edgecolors = 'black')
+    
+    line = ax.plot(rtRSAObj.RS_coords[0:1,0],rtRSAObj.RS_coords[0:1,1], color = 'dimgray')
+    
     ax.axis('off')
     
     for label, x, y in zip(rtRSAObj.conditions, rtRSAObj.RS_coords[:,0],rtRSAObj.RS_coords[:,1]):
@@ -91,10 +94,10 @@ def create_baseline_figure(rtRSAObj, image):
     # put it in an ImageStim
     image.setImage(os.path.join(outdir,'initial_img.png'))
     
-    return scat, ax
+    return scat, ax, line
 
 
-def create_feedback(scat,ax,idx_fb,stimulus_positions,img,win):
+def create_feedback(scat,ax, line, idx_fb,stimulus_positions,img,win, RScoords):
     '''
     
 
@@ -128,20 +131,49 @@ def create_feedback(scat,ax,idx_fb,stimulus_positions,img,win):
         #first feedback        
         new_scat = ax.scatter(stimulus_positions[idx_fb,0],stimulus_positions[idx_fb,1], 
                     marker = '*',s=200, color = 'red', edgecolors='black')
-        
-    else:
-        #from the second feedback onwards
+    
+    elif idx_fb > 0 and idx_fb < 4:
+        #from the second feedback to the fourth
         new_scat = scat
         #delete the reference to the point plotted for the previous iteration
         new_scat.set_offsets(np.delete(scat.get_offsets(), 0, axis=0))
+
+        line.pop(0).remove()
         #plot the new position of the current mental state and, in dashed lines,
         #the trajectory until now        
         new_scat = ax.scatter(stimulus_positions[idx_fb,0],stimulus_positions[idx_fb,1], 
                     marker = '*',s=200, color = 'red', edgecolors='black',zorder=3)
-        ax.plot(stimulus_positions[:idx_fb+1,0],stimulus_positions[:idx_fb+1,1], '--',
+        line = ax.plot(stimulus_positions[:idx_fb+1,0],stimulus_positions[:idx_fb+1,1], '--',
+                        color = 'black',alpha=0.2,zorder=1) 
+
+    else:
+        #from the fourth feedback onwards
+        new_scat = scat
+        #delete the reference to the point plotted for the previous iteration
+        new_scat.set_offsets(np.delete(scat.get_offsets(), 0, axis=0))
+        
+        line.pop(0).remove()
+        #plot the new position of the current mental state and, in dashed lines,
+        #the trajectory until now        
+        new_scat = ax.scatter(stimulus_positions[idx_fb,0],stimulus_positions[idx_fb,1], 
+                    marker = '*',s=200, color = 'red', edgecolors='black',zorder=3)
+        line = ax.plot(stimulus_positions[(idx_fb-4):(idx_fb+1),0],stimulus_positions[(idx_fb-4):(idx_fb+1),1], '--',
                         color = 'black',alpha=0.2,zorder=1)
 
     ax.set_facecolor('dimgray')
+
+	#scale plot
+    
+    xmin = np.min(np.append(RScoords[:,0], stimulus_positions[idx_fb,0]))
+    xmax = np.max(np.append(RScoords[:,0], stimulus_positions[idx_fb,0]))
+    ymin = np.min(np.append(RScoords[:,1], stimulus_positions[idx_fb,1]))
+    ymax = np.max(np.append(RScoords[:,1], stimulus_positions[idx_fb,1]))
+    dx = (xmax-xmin)*0.1
+    dy = (ymax - ymin)*0.1
+    ax.set_xlim(xmin - dx , xmax + dx)
+    ax.set_ylim(ymin - dy, ymax + dy)
+    
+
     plt.xticks([])
     plt.yticks([])
     plt.axis('off')
@@ -155,7 +187,7 @@ def create_feedback(scat,ax,idx_fb,stimulus_positions,img,win):
     image.draw()
     win.flip()
 
-    return new_scat
+    return new_scat, line
 
 
 
@@ -293,7 +325,7 @@ idx_ctr = 0
 ###############################################################################
 timepoint_timing = []
 
-scat, ax = create_baseline_figure(rtRSAObj,image)
+scat, ax, line = create_baseline_figure(rtRSAObj,image)
 print('Baseline figure created!')
 
 
@@ -398,9 +430,9 @@ while TBV.get_current_time_point()[0] <= NrOfTimePoints+1:
                 
                 #create the feedback
                 if idx_fb == 0:
-                    new_scat = create_feedback(scat,ax,idx_fb,stimulus_positions,image,win)
+                    new_scat, line = create_feedback(scat,ax, line,idx_fb,stimulus_positions,image,win, rtRSAObj.RS_coords)
                 else:
-                    new_scat = create_feedback(new_scat,ax,idx_fb,stimulus_positions,image,win)
+                    new_scat, line = create_feedback(new_scat,ax, line, idx_fb,stimulus_positions,image,win, rtRSAObj.RS_coords)
               
                 #increment the index of the contrast map
                 idx_fb += 1
@@ -421,7 +453,7 @@ while TBV.get_current_time_point()[0] <= NrOfTimePoints+1:
                 feedback_distances.append(tmp_dist)
                 all_tvalues.append(tvalues)
                 #create the feedback
-                new_scat = create_feedback(new_scat,ax,idx_fb,stimulus_positions,image,win)
+                new_scat, line = create_feedback(new_scat,ax, line, idx_fb,stimulus_positions,image,win, rtRSAObj.RS_coords)
                 
                 print('Last time point!')
 
