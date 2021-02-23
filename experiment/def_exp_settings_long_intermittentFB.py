@@ -30,15 +30,15 @@ feedback_duration = 4
 #block is composed by a baseline+task+baseline+feedback
 #however we need to have an initial feedback (only the visualization of the RS)
 #to have the correct estimation of the t-values at the first real feedback
-block_duration = feedback_duration + baseline_duration + task_duration + baseline_duration
+block_duration = baseline_duration + task_duration + baseline_duration + feedback_duration
 
-feedbacks = np.array([1,feedback_duration]).reshape(1,-1)
-baselines1 = np.array([feedback_duration+1, feedback_duration + baseline_duration]).reshape(1,-1)
-tasks = np.array([feedback_duration + baseline_duration + 1, feedback_duration + baseline_duration + task_duration]).reshape(1,-1)
-baselines2 = np.array([ feedback_duration + baseline_duration + task_duration + 1, block_duration]).reshape(1,-1)
+baselines1 = np.array([1,baseline_duration]).reshape(1,-1)
+feedbacks = np.array([baseline_duration + 1, baseline_duration + feedback_duration]).reshape(1,-1)
+baselines2 = np.array([baseline_duration + feedback_duration + 1, baseline_duration + feedback_duration +baseline_duration]).reshape(1,-1)
+tasks = np.array([baseline_duration + feedback_duration + baseline_duration  + 1, baseline_duration + feedback_duration + baseline_duration + task_duration]).reshape(1,-1)
 
  
-
+#%%
 
 
 
@@ -46,14 +46,13 @@ n_rip = 10
 
 for i in range(1,n_rip):
     
-    feedbacks = np.vstack((feedbacks,feedbacks[0,:]+i*block_duration))
     baselines1 = np.vstack((baselines1,baselines1[0,:]+i*block_duration))
     tasks = np.vstack((tasks,tasks[0,:]+i*block_duration))
     baselines2 = np.vstack((baselines2,baselines2[0,:]+i*block_duration))
+    feedbacks = np.vstack((feedbacks,feedbacks[0,:]+i*block_duration))
 
 
-#additional last baseline
-#baselines = np.vstack((baselines,baselines[-1,:]+block_duration))
+
 
 baselines = np.empty((2*len(baselines1),2)).astype('int')
 
@@ -61,7 +60,9 @@ for i in range(len(baselines1)):
     baselines[i*2,:] = baselines1[i,:]
     baselines[i*2+1,:] = baselines2[i,:]
 
-
+#additional last baseline
+last_baseline = np.array([tasks[-1,1]+1,tasks[-1,1]+baseline_duration]).reshape(1,-1)
+baselines = np.vstack((baselines,last_baseline))
 
 
 #%%############################################################################
@@ -73,6 +74,7 @@ conditions = ['gatto','sedia','cane','martello']
 #incremental prt    
 for im in conditions:
     im_name = im.split('.')[0]    
+    
     protocol = prt.StimulationProtocol(experiment_name="rtRSA " + im_name, 
                                        time_units="Volumes")
     #baselines
