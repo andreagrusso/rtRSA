@@ -329,10 +329,14 @@ scat, ax, line = create_baseline_figure(rtRSAObj,image)
 print('Baseline figure created!')
 
 
+#just display the first fixation
+fixation.draw()
+win.flip()
+
 #just display the RS without feedback about the current brain pattern
-image.setImage(os.path.join(outdir,'initial_img.png')) 
-image.draw() 
-win.flip() 
+# image.setImage(os.path.join(outdir,'initial_img.png')) 
+# image.draw() 
+# win.flip() 
 
 real_run = 'n'
 if  real_run == 'y':
@@ -416,7 +420,13 @@ while TBV.get_current_time_point()[0] <= NrOfTimePoints+1:
             elif CurrTimePoint in tasks[:,1]:                            
                 stop_stim.play()
                 print('stop')
-    
+                
+                
+            elif CurrTimePoint == feedbacks[0,0]:
+                image.setImage(os.path.join(outdir,'initial_img.png')) 
+                image.draw() 
+                win.flip() 
+
             #extract the map and plot the current position
             elif CurrTimePoint in feedbacks[1:,0]:
                 
