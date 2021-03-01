@@ -66,9 +66,9 @@ def create_baseline_figure(rtRSAObj, image):
     fig,ax = plt.subplots()
     fig.set_facecolor('dimgray')
     scat = ax.scatter(rtRSAObj.RS_coords[:,0],rtRSAObj.RS_coords[:,1],s=150, c='yellow',
-               edgecolors = 'black')
+               edgecolors = 'black', zorder = 2)
     
-    line = ax.plot(rtRSAObj.RS_coords[0:1,0],rtRSAObj.RS_coords[0:1,1], color = 'dimgray')
+    line = ax.plot(rtRSAObj.RS_coords[0:1,0],rtRSAObj.RS_coords[0:1,1], color = 'dimgray', zorder = 1)
     
     ax.axis('off')
     
@@ -76,7 +76,7 @@ def create_baseline_figure(rtRSAObj, image):
         ax.annotate(label, xy=(x, y), xytext=(-20, 20),size=15,
                      textcoords='offset points', ha='right', va='bottom',
                      bbox=dict(boxstyle='round,pad=0.5', fc='yellow', alpha=1),
-                     arrowprops=dict(arrowstyle = '->', connectionstyle='arc3,rad=0'), zorder=1) 
+                     arrowprops=dict(arrowstyle = '->', connectionstyle='arc3,rad=0'), zorder=2) 
     
     
     yellow_circle = mlines.Line2D([], [], color='yellow',  linestyle='None', 
@@ -130,7 +130,7 @@ def create_feedback(scat,ax, line, idx_fb,stimulus_positions,img,win, RScoords):
     if idx_fb == 0:
         #first feedback        
         new_scat = ax.scatter(stimulus_positions[idx_fb,0],stimulus_positions[idx_fb,1], 
-                    marker = '*',s=200, color = 'red', edgecolors='black')
+                    marker = '*',s=200, color = 'red', edgecolors='black', zorder = 3)
     
     elif idx_fb > 0 and idx_fb < 4:
         #from the second feedback to the fourth
