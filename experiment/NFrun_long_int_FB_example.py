@@ -310,7 +310,7 @@ feedbacks = pickle.load(open(os.path.join(wdir,'prt/long_intermittent/feedbacks.
 nr_of_trials = feedbacks.shape[0]
 
 #variable to store positions of the stimulus in time
-stimulus_positions = np.empty((nr_of_trials+1,2))
+stimulus_positions = np.empty((nr_of_trials,2))
 feedback_distances = []
 all_tvalues = []
 
