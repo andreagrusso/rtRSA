@@ -71,7 +71,8 @@ def create_baseline_figure(rtRSAObj, image):
     line = ax.plot(rtRSAObj.RS_coords[0:1,0],rtRSAObj.RS_coords[0:1,1], color = 'dimgray', zorder = 1)
     
     ax.axis('off')
-    
+    ax.axis('equal')
+
     for label, x, y in zip(rtRSAObj.conditions, rtRSAObj.RS_coords[:,0],rtRSAObj.RS_coords[:,1]):
         ax.annotate(label, xy=(x, y), xytext=(-20, 20),size=15,
                      textcoords='offset points', ha='right', va='bottom',
@@ -174,9 +175,9 @@ def create_feedback(scat,ax, line, idx_fb,stimulus_positions,img,win, RScoords):
     ax.set_ylim(ymin - dy, ymax + dy)
     
 
-    plt.xticks([])
-    plt.yticks([])
-    plt.axis('off')
+    #plt.xticks([])
+    #plt.yticks([])
+    #plt.axis('off')
             
     #save figure
     plt.savefig(os.path.join(outdir,'tvals_Trial' + str(idx_fb)+ '.png'),
