@@ -30,7 +30,7 @@ win = visual.Window(fullscr = False, color='dimgray', screen = 1,
 # settings for launchScan:
 MR_settings = {
     'TR': 1,     # duration (sec) per whole-brain volume
-    'volumes': 43,    # number of whole-brain 3D volumes per scanning run
+    'volumes': 400,    # number of whole-brain 3D volumes per scanning run
     'sync': '5', # character to use as the sync timing event; assumed to come at start of a volume
     'skip': 0,       # number of volumes lacking a sync pulse at start of scan (for T1 stabilization)
     'sound': False    # in test mode: play a tone as a reminder of scanner noise
